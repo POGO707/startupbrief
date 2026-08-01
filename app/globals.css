@@ -1,0 +1,368 @@
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────
+   DESIGN TOKENS - PREMIUM DIGITAL NEWSPAPER
+───────────────────────────────────────── */
+:root {
+  /* Colors - Newspaper Palette */
+  --color-bg: #f7f5f1; /* Warm paper tone */
+  --color-surface: #f7f5f1; 
+  --color-surface-hover: #edeae4;
+  --color-surface-alt: #ffffff; /* Rare stark white for high contrast */
+  
+  --color-primary: #ff6b00; /* Startup Brief Orange */
+  --color-primary-dark: #e55f00;
+  
+  --color-text: #111111; /* Newspaper ink black */
+  --color-secondary: #3e3a35; /* Dark gray/brown ink */
+  --color-muted: #6b665f; /* Lighter ink */
+  
+  --color-border: #dcd7ce; /* Subtle paper line */
+  --color-border-dark: #111111; /* Strong editorial line */
+
+  /* Typography */
+  --font-headline: "Newsreader", Georgia, serif;
+  --font-ui: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* Spacing Scale - Dense Editorial Rhythm */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+
+  /* Type Scale */
+  --text-xs: 11px;
+  --text-sm: 13px;
+  --text-base: 15px;
+  --text-md: 18px;
+  --text-lg: 22px;
+  --text-xl: 28px;
+  --text-2xl: 36px;
+  --text-3xl: 48px;
+  --text-4xl: 64px;
+  --text-5xl: 80px;
+
+  /* Borders - Strict 0px Radius for Newspaper Feel */
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-full: 0px; /* Only used for avatars */
+
+  /* Shadows - Minimal to None */
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+
+  /* Layout */
+  --container-max: 1280px;
+  --container-wide: 1440px;
+}
+
+/* ─────────────────────────────────────────
+   RESET & BASE
+───────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-ui);
+  font-size: var(--text-base);
+  color: var(--color-text);
+  background: var(--color-bg);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ─────────────────────────────────────────
+   TYPOGRAPHY
+───────────────────────────────────────── */
+
+h1, h2, h3, h4, h5, h6, .headline {
+  font-family: var(--font-headline);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.headline-display {
+  font-family: var(--font-headline);
+  font-size: clamp(36px, 6vw, 72px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  font-weight: 500;
+}
+
+.headline-hero {
+  font-family: var(--font-headline);
+  font-size: clamp(28px, 4vw, 56px);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  font-weight: 500;
+}
+
+.headline-section {
+  font-family: var(--font-headline);
+  font-size: clamp(24px, 3vw, 40px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.headline-card {
+  font-family: var(--font-headline);
+  font-size: clamp(16px, 2vw, 24px);
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+
+.body-lg {
+  font-family: var(--font-headline); /* Classic newspaper serif body */
+  font-size: 19px;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+.body-base {
+  font-family: var(--font-ui);
+  font-size: var(--text-base);
+  line-height: 1.65;
+  color: var(--color-secondary);
+}
+
+.body-sm {
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  color: var(--color-muted);
+}
+
+/* ─────────────────────────────────────────
+   LAYOUT
+───────────────────────────────────────── */
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: clamp(16px, 4vw, 48px);
+}
+
+.container-wide {
+  width: 100%;
+  max-width: var(--container-wide);
+  margin-inline: auto;
+  padding-inline: clamp(16px, 4vw, 48px);
+}
+
+/* ─────────────────────────────────────────
+   SECTION SEPARATORS (NEWSPAPER STYLE)
+───────────────────────────────────────── */
+.section {
+  padding-block: clamp(32px, 5vw, 64px);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* For main feature demarcations */
+.editorial-border-top {
+  border-top: 4px solid var(--color-text);
+}
+.editorial-border-bottom {
+  border-bottom: 4px solid var(--color-text);
+}
+
+/* ─────────────────────────────────────────
+   CATEGORY BADGES
+───────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text);
+  padding: 4px 0;
+  border-bottom: 1px solid var(--color-text);
+  line-height: 1;
+  text-decoration: none;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.badge:hover {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.badge-filled {
+  background: var(--color-text);
+  color: var(--color-bg);
+  padding: 4px 8px;
+  border: none;
+}
+
+/* ─────────────────────────────────────────
+   SECTION HEADERS
+───────────────────────────────────────── */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border-dark);
+}
+
+.section-header-title {
+  font-family: var(--font-headline);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-text);
+  letter-spacing: -0.02em;
+}
+
+/* ─────────────────────────────────────────
+   ARTICLE META
+───────────────────────────────────────── */
+.article-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.meta-dot {
+  width: 3px;
+  height: 3px;
+  background: var(--color-border-dark);
+  flex-shrink: 0;
+}
+
+.meta-text {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--color-muted);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ─────────────────────────────────────────
+   IMAGE UTILITIES
+───────────────────────────────────────── */
+.img-hover {
+  overflow: hidden;
+  background: var(--color-border); /* Placeholder color matching paper */
+}
+
+.img-hover img {
+  transition: filter 500ms ease; /* Removed scale animation for cleaner editorial feel */
+  object-fit: cover;
+}
+
+.img-hover:hover img {
+  filter: brightness(0.95);
+}
+
+/* ─────────────────────────────────────────
+   LINK UTILITIES
+───────────────────────────────────────── */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.link-headline {
+  transition: color var(--transition-fast);
+}
+
+.link-headline:hover {
+  color: var(--color-primary);
+}
+
+/* ─────────────────────────────────────────
+   BUTTONS
+───────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 12px 24px;
+  border: 1px solid var(--color-text);
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  background: var(--color-text);
+  color: var(--color-bg);
+}
+
+.btn-primary {
+  background: var(--color-text);
+  color: var(--color-bg);
+  border-color: var(--color-text);
+}
+
+.btn-primary:hover {
+  background: transparent;
+  color: var(--color-text);
+}
+
+/* ─────────────────────────────────────────
+   SCROLLBAR
+───────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-dark);
+}
+
+/* ─────────────────────────────────────────
+   SELECTION
+───────────────────────────────────────── */
+::selection {
+  background: var(--color-text);
+  color: var(--color-bg);
+}
+
+/* ─────────────────────────────────────────
+   FOCUS
+───────────────────────────────────────── */
+:focus-visible {
+  outline: 1px solid var(--color-primary);
+  outline-offset: 2px;
+}
