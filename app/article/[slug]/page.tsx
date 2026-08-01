@@ -6,10 +6,11 @@ import { ArrowLeft, Clock, Share2, Bookmark, Twitter, Linkedin, Link2 } from "lu
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { prisma } from "@/lib/prisma";
+import type { Tag } from "@prisma/client";
 
 export async function generateStaticParams() {
   const articles = await prisma.article.findMany({ select: { slug: true } });
-  return articles.map(a => ({ slug: a.slug }));
+  return articles.map((a: { slug: string }) => ({ slug: a.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -189,7 +190,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 {/* Tags */}
                 <div className="article-tags">
                   <span className="article-tags-label">Tags:</span>
-                  {(article.tags ?? []).map((tag: any) => (
+                  {(article.tags ?? []).map((tag: Tag) => (
                     <Link key={tag.id} href={`/tag/${tag.slug}`} className="article-tag">
                       {tag.name}
                     </Link>
