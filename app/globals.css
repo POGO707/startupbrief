@@ -10,11 +10,11 @@
   --color-surface-hover: #edeae4;
   --color-surface-alt: #ffffff; /* Rare stark white for high contrast */
   
-  --color-primary: #ff6b00; /* Startup Brief Orange */
-  --color-primary-dark: #e55f00;
+  --color-primary: #FF6A00; /* Startup Brief Orange */
+  --color-primary-dark: #e55e00;
   
   --color-text: #111111; /* Newspaper ink black */
-  --color-secondary: #3e3a35; /* Dark gray/brown ink */
+  --color-secondary: #111111; /* Dark gray/brown ink */
   --color-muted: #6b665f; /* Lighter ink */
   
   --color-border: #dcd7ce; /* Subtle paper line */

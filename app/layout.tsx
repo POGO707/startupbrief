@@ -1,14 +1,15 @@
+/* eslint-disable @next/next/no-page-custom-font */
 import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://startupbrief.com"),
+  applicationName: "Startup Brief",
   title: {
-    default: "Startup Brief — AI, Startups, Founders & Technology",
+    default: "Startup Brief – AI, Startups & Business News",
     template: "%s | Startup Brief",
   },
-  description:
-    "Startup Brief is a premium editorial media platform covering AI, startups, founders, technology, funding, and business for the next generation of builders.",
+  description: "Premium AI, Startup, Founder and Business Media Platform",
   keywords: [
     "startups",
     "AI news",
@@ -27,26 +28,15 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://startupbrief.com",
     siteName: "Startup Brief",
-    title: "Startup Brief — AI, Startups, Founders & Technology",
-    description:
-      "Premium editorial media platform covering AI, startups, founders, and technology.",
-    images: [
-      {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Startup Brief",
-      },
-    ],
+    title: "Startup Brief – AI, Startups & Business News",
+    description: "Premium AI, Startup, Founder and Business Media Platform",
   },
   twitter: {
     card: "summary_large_image",
     site: "@startupbrief",
     creator: "@startupbrief",
-    title: "Startup Brief — AI, Startups, Founders & Technology",
-    description:
-      "Premium editorial media platform covering AI, startups, founders, and technology.",
-    images: ["/og-image.jpg"],
+    title: "Startup Brief – AI, Startups & Business News",
+    description: "Premium AI, Startup, Founder and Business Media Platform",
   },
   robots: {
     index: true,
@@ -58,11 +48,6 @@ export const metadata: Metadata = {
       "max-image-preview": "large",
       "max-snippet": -1,
     },
-  },
-  icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon-16x16.png",
-    apple: "/apple-touch-icon.png",
   },
 };
 
