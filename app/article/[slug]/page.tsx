@@ -10,7 +10,7 @@ import type { Tag } from "@prisma/client";
 
 export async function generateStaticParams() {
   const articles = await prisma.article.findMany({ select: { slug: true } });
-  return articles.map((a: { slug: string }) => ({ slug: a.slug }));
+  return articles.map((a) => ({ slug: a.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
