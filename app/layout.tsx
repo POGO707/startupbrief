@@ -67,6 +67,28 @@ export default function RootLayout({
         />
       </head>
       <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "NewsMediaOrganization",
+              "name": "Startup Brief",
+              "url": "https://startupbrief.com",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://startupbrief.com/icon/32",
+                "width": 32,
+                "height": 32
+              },
+              "sameAs": [
+                "https://twitter.com/startupbrief",
+                "https://linkedin.com/company/startupbrief"
+              ],
+              "description": "Premium AI, Startup, Founder and Business Media Platform"
+            })
+          }}
+        />
         {children}
       </body>
     </html>

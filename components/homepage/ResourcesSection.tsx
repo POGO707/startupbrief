@@ -1,145 +1,140 @@
 import Link from "next/link";
-import { ArrowRight, FileText, BarChart2, Map, CheckSquare, Zap, TrendingUp, Download } from "lucide-react";
-import { resources } from "@/lib/data";
+import { FileText, Download, Code, Layers } from "lucide-react";
 
-const typeLabels: Record<string, string> = {
-  template: "Template",
-  guide: "Guide",
-  checklist: "Checklist",
-  tool: "Directory",
-  download: "Download",
-};
+const resourcesList = [
+  {
+    title: "Series A Fundraising Pitch Deck Template (2026 Edition)",
+    desc: "The exact 12-slide narrative structure used by top tech startups to raise $10M+ from Sequoia, Accel, and Benchmark.",
+    category: "FUNDRAISING",
+    icon: FileText,
+    link: "/resources/pitch-deck-template",
+  },
+  {
+    title: "AI Infrastructure Unit Economics Calculator",
+    desc: "Financial model spreadsheet to calculate GPU inference costs, API margins, and token cost forecasting.",
+    category: "FINANCE",
+    icon: Download,
+    link: "/resources/unit-economics-calculator",
+  },
+  {
+    title: "Async Engineering Operating System Framework",
+    desc: "Comprehensive playbook on asynchronous pull request workflows, documentation standards, and multi-timezone design.",
+    category: "PLAYBOOK",
+    icon: Layers,
+    link: "/resources/async-operating-system",
+  },
+  {
+    title: "SaaS Go-to-Market Playbook for Solo Builders",
+    desc: "Step-by-step launch strategy from zero to 1,000 paying users using AI content engines and community channels.",
+    category: "GROWTH",
+    icon: Code,
+    link: "/resources/gtm-playbook",
+  },
+];
 
 export default function ResourcesSection() {
   return (
-    <section className="resources-section section editorial-border-top" aria-label="Resources">
-      <div className="container">
-        <div className="section-header">
-          <h2 className="section-header-title">Free Resources</h2>
-        </div>
+    <section className="newspaper-section-block" aria-label="Resources Section">
+      <div className="section-header">
+        <h2 className="section-header-title">RESOURCES & FOUNDER TOOLKITS</h2>
+        <Link href="/resources" className="section-view-all-link">
+          VIEW ALL RESOURCES &rarr;
+        </Link>
+      </div>
 
-        <div className="resources-intro">
-          <p>
-            Free templates, guides, checklists, and tools built for founders, operators, and builders.
-            Download instantly — no email required.
-          </p>
-        </div>
-
-        <div className="resources-grid">
-          {resources.map((resource) => (
-            <article key={resource.id} className="resource-card">
-              <div className="resource-type">
-                <span className="badge">
-                  {typeLabels[resource.type] ?? resource.type}
-                </span>
-                {resource.free && (
-                  <span className="resource-free-badge">Free</span>
-                )}
+      <div className="resources-grid">
+        {resourcesList.map((res) => {
+          const IconComp = res.icon;
+          return (
+            <div key={res.link} className="resource-card">
+              <div className="resource-icon-wrap">
+                <IconComp size={22} color="#ff6a00" />
               </div>
-              <h3 className="resource-title link-headline">
-                <Link href={`/resources/${resource.slug}`}>
-                  {resource.title}
+              <div className="resource-info">
+                <span className="card-orange-badge">{res.category}</span>
+                <h3 className="resource-title">
+                  <Link href={res.link}>{res.title}</Link>
+                </h3>
+                <p className="resource-desc">{res.desc}</p>
+                <Link href={res.link} className="resource-dl-btn">
+                  Access Resource &rarr;
                 </Link>
-              </h3>
-              <p className="resource-desc">{resource.description}</p>
-              <a
-                href={resource.downloadUrl}
-                className="resource-download-btn"
-                aria-label={`Download ${resource.title}`}
-              >
-                Download Free <Download size={13} style={{ marginLeft: 4 }} />
-              </a>
-            </article>
-          ))}
-        </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       <style>{`
-        .resources-section {
-          background: var(--color-bg);
-        }
-        .resources-intro {
-          margin-bottom: 32px;
-        }
-        .resources-intro p {
-          font-family: var(--font-ui);
-          font-size: 15px;
-          color: var(--color-secondary);
-          line-height: 1.6;
-          max-width: 600px;
+        .newspaper-section-block {
+          width: 100%;
+          margin-bottom: 40px;
         }
         .resources-grid {
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 32px;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 20px;
         }
         .resource-card {
-          border: 1px solid var(--color-border);
-          padding: 32px;
+          display: flex;
+          gap: 16px;
+          border: 1px solid #e2e8f0;
+          padding: 20px;
+          background: #ffffff;
+          align-items: start;
+        }
+        .resource-icon-wrap {
+          width: 44px;
+          height: 44px;
+          background: #fff7ed;
+          border: 1px solid #ffedd5;
+          border-radius: 4px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+        .resource-info {
           display: flex;
           flex-direction: column;
-          gap: 12px;
+          gap: 6px;
         }
-        .resource-type {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-        .resource-free-badge {
-          font-family: var(--font-ui);
+        .card-orange-badge {
+          font-family: var(--font-ui), sans-serif;
           font-size: 10px;
           font-weight: 800;
+          color: #ff6a00;
           letter-spacing: 0.1em;
           text-transform: uppercase;
-          border: 1px solid var(--color-text);
-          color: var(--color-text);
-          padding: 2px 7px;
         }
         .resource-title {
-          font-family: var(--font-headline);
-          font-size: 22px;
+          font-family: var(--font-headline), Georgia, serif;
+          font-size: 17px;
+          font-weight: 700;
           line-height: 1.25;
-          letter-spacing: -0.015em;
-          font-weight: 500;
+          margin: 0;
         }
-        .resource-title a {
-          text-decoration: none;
-        }
+        .resource-title a { color: #0f172a; text-decoration: none; }
+        .resource-title a:hover { color: #ff6a00; }
         .resource-desc {
-          font-family: var(--font-ui);
-          font-size: 14px;
-          color: var(--color-secondary);
-          line-height: 1.6;
-          flex: 1;
+          font-family: var(--font-ui), sans-serif;
+          font-size: 13px;
+          color: #475569;
+          line-height: 1.45;
+          margin: 0;
         }
-        .resource-download-btn {
-          display: inline-flex;
-          align-items: center;
-          font-family: var(--font-ui);
+        .resource-dl-btn {
+          font-family: var(--font-ui), sans-serif;
           font-size: 11px;
           font-weight: 800;
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-          color: var(--color-text);
+          color: #ff6a00;
           text-decoration: none;
-          border-top: 1px solid var(--color-border);
-          padding-top: 16px;
-          margin-top: 16px;
-          transition: color 150ms ease;
+          margin-top: 4px;
         }
-        .resource-download-btn:hover {
-          color: var(--color-primary);
-        }
+        .resource-dl-btn:hover { text-decoration: underline; }
 
         @media (max-width: 900px) {
-          .resources-grid {
-            grid-template-columns: repeat(2, 1fr);
-          }
-        }
-        @media (max-width: 560px) {
-          .resources-grid {
-            grid-template-columns: 1fr;
-          }
+          .resources-grid { grid-template-columns: 1fr; }
         }
       `}</style>
     </section>

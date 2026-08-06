@@ -1,10 +1,25 @@
 import Link from "next/link";
 import Image from "next/image";
-import { businessArticles } from "@/lib/data";
+import { getPublishedArticles } from "@/lib/articles";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 
-export default function BusinessSection() {
-  const [featured, col1, col2, col3] = businessArticles;
+export default async function BusinessSection() {
+  const businessArticles = await getPublishedArticles({ categorySlug: "business", take: 4 });
+  const fallback = {
+    id: "b-def",
+    slug: "",
+    title: "Business Strategy & Markets",
+    excerpt: "Analysis on markets, growth, and strategy.",
+    category: "Business",
+    author: "Editorial Team",
+    publishedAt: "July 31, 2026",
+    readingTime: 5,
+    image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=600&h=400&fit=crop&auto=format",
+  };
+  const featured = businessArticles[0] || fallback;
+  const col1 = businessArticles[1] || fallback;
+  const col2 = businessArticles[2] || fallback;
+  const col3 = businessArticles[3] || fallback;
 
   return (
     <section className="business-section section editorial-border-top" aria-label="Business news">

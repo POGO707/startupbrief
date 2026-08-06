@@ -1,9 +1,22 @@
 import Link from "next/link";
 import Image from "next/image";
-import { technologyArticles } from "@/lib/data";
+import { getPublishedArticles } from "@/lib/articles";
 
-export default function TechnologySection() {
-  const [featured, ...rest] = technologyArticles;
+export default async function TechnologySection() {
+  const techArticles = await getPublishedArticles({ categorySlug: "technology", take: 5 });
+  const fallback = {
+    id: "t-def",
+    slug: "",
+    title: "Technology Innovations",
+    excerpt: "Insights into quantum, robotics, and hardware.",
+    category: "Technology",
+    author: "Editorial Team",
+    publishedAt: "July 31, 2026",
+    readingTime: 5,
+    image: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=700&h=450&fit=crop&auto=format",
+  };
+  const featured = techArticles[0] || fallback;
+  const rest = techArticles.slice(1);
 
   return (
     <section className="tech-section section editorial-border-top" aria-label="Technology news">

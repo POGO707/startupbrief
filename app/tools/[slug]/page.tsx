@@ -2,27 +2,50 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { ExternalLink, Check, X, ArrowRight, Star, DollarSign } from "lucide-react";
-import { topTools } from "@/lib/data";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { prisma } from "@/lib/prisma";
+import { formatArticle } from "@/lib/articles";
 
 export async function generateStaticParams() {
-  return topTools.map((t) => ({ slug: t.slug }));
+  const articles = await prisma.article.findMany({ select: { slug: true } });
+  return articles.map((a) => ({ slug: a.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const tool = topTools.find((t) => t.slug === slug) ?? topTools[0];
+  const article = await prisma.article.findUnique({ where: { slug } });
+  const toolName = article ? article.title.split(" ")[0] : "AI Tool";
   return {
-    title: `${tool.name} Review & Overview`,
-    description: tool.description,
+    title: `${toolName} Review & Overview`,
+    description: article?.excerpt || "Comprehensive review and breakdown.",
   };
 }
 
 export default async function ToolPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const tool = topTools.find((t) => t.slug === slug) ?? topTools[0];
-  const alternatives = topTools.filter((t) => t.slug !== slug).slice(0, 3);
+  const dbArticle = await prisma.article.findUnique({ where: { slug }, include: { category: true } });
+  const dbArticles = await prisma.article.findMany({ where: { status: "published" }, take: 4 });
+  const articles = dbArticles.map(formatArticle);
+
+  const tool = {
+    name: dbArticle ? dbArticle.title.split(" ")[0] : "AI Tool",
+    tagline: dbArticle?.excerpt || "Next-generation AI solution",
+    description: dbArticle?.excerpt || "Comprehensive AI tool for modern software teams and creators.",
+    category: dbArticle?.category?.name || "Coding",
+    logo: dbArticle?.featuredImage || dbArticle?.image || "https://images.unsplash.com/photo-1537432376769-00f5c2f4c8d2?w=80&h=80&fit=crop&auto=format",
+    pricing: "Free / $20/mo",
+    pricingType: "freemium" as "freemium" | "paid" | "free",
+    url: `/article/${slug}`,
+  };
+
+  const alternatives = articles.filter((a) => a.slug !== slug).slice(0, 3).map((a) => ({
+    id: a.id,
+    slug: a.slug,
+    name: a.title.split(" ")[0] || a.title,
+    category: a.category,
+    logo: a.image,
+  }));
 
   const features = [
     "Advanced context window up to 200K tokens",

@@ -2,35 +2,70 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { Twitter, Linkedin, Globe, ArrowRight } from "lucide-react";
-import { founderArticles } from "@/lib/data";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { prisma } from "@/lib/prisma";
+import { formatArticle } from "@/lib/articles";
 
 export async function generateStaticParams() {
-  return founderArticles.map((a) => ({ slug: a.authorSlug }));
+  const users = await prisma.user.findMany({ select: { id: true, name: true } });
+  const articles = await prisma.article.findMany({ select: { slug: true } });
+  const authorSlugs = users.map((u) => u.name ? u.name.toLowerCase().replace(/[^a-z0-9]+/g, "-") : u.id);
+  const articleSlugs = articles.map((a) => a.slug);
+  return Array.from(new Set([...authorSlugs, ...articleSlugs])).map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const article = founderArticles.find((a) => a.authorSlug === slug) ?? founderArticles[0];
+  const user = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { id: slug },
+        { name: { contains: slug.replace(/-/g, " ") } }
+      ]
+    }
+  });
+
+  const authorName = user?.name || "Featured Founder";
   return {
-    title: `${article.author} — Startup Brief`,
-    description: `Read interviews, articles, and insights from ${article.author}.`,
+    title: `${authorName} — Startup Brief`,
+    description: `Read interviews, articles, and insights from ${authorName}.`,
   };
 }
 
 export default async function FounderPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const founder = founderArticles.find((a) => a.authorSlug === slug) ?? founderArticles[0];
-  const articles = founderArticles.filter((a) => a.authorSlug === slug || a.id !== founder.id).slice(0, 4);
+
+  const user = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { id: slug },
+        { name: { contains: slug.replace(/-/g, " ") } }
+      ]
+    }
+  });
+
+  const dbArticles = await prisma.article.findMany({
+    where: { status: "published" },
+    include: { author: true, category: true },
+    take: 6,
+    orderBy: { publishedAt: "desc" }
+  });
+
+  const articles = dbArticles.map(formatArticle);
+  const founder = {
+    author: user?.name || articles[0]?.author || "Featured Founder",
+    authorAvatar: articles[0]?.authorAvatar || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=160&h=160&fit=crop&auto=format",
+    category: articles[0]?.category || "Founders",
+    id: user?.id || "f-1"
+  };
 
   const timeline = [
-    { year: "2008", event: "Graduated from Stanford Computer Science" },
-    { year: "2010", event: "Co-founded first startup (acquired 2013)" },
-    { year: "2015", event: "Joined NVIDIA as VP of Software" },
-    { year: "2018", event: "Named to Forbes 30 Under 30" },
-    { year: "2022", event: "Launched second company, raised $120M Series A" },
-    { year: "2026", event: "Company valued at $2.4 billion" },
+    { year: "2018", event: "Co-founded tech startup in San Francisco" },
+    { year: "2020", event: "Raised Series A funding led by top Silicon Valley VCs" },
+    { year: "2022", event: "Expanded product suite and hit 1M+ active users" },
+    { year: "2024", event: "Scaled company to profitability and global distribution" },
+    { year: "2026", event: "Pioneering next-generation AI infrastructure and tools" },
   ];
 
   return (
@@ -59,9 +94,9 @@ export default async function FounderPage({ params }: { params: Promise<{ slug: 
                   <p className="founder-page-title">Founder &amp; CEO · Featured in {founder.category}</p>
                   <p className="founder-page-bio">
                     A pioneering figure in the technology and startup ecosystem, {founder.author} has built
-                    multiple category-defining companies and is widely regarded as one of the most influential
-                    voices in modern entrepreneurship. Their approach to product, people, and growth has shaped
-                    how an entire generation of founders thinks about building companies.
+                    category-defining products and is widely regarded as an influential
+                    voice in modern entrepreneurship. Their approach to product, people, and growth has shaped
+                    how modern founders think about building companies.
                   </p>
                   <div className="founder-page-social">
                     <a href="#" className="founder-social-btn" aria-label="Twitter"><Twitter size={15} /> Twitter</a>
@@ -125,22 +160,15 @@ export default async function FounderPage({ params }: { params: Promise<{ slug: 
                 <div className="founder-sidebar-card">
                   <h2 className="tool-sidebar-title">At a Glance</h2>
                   {[
-                    { label: "Companies Founded", value: "3" },
-                    { label: "Total Capital Raised", value: "$340M+" },
-                    { label: "Portfolio Valuation", value: "$4.2B" },
-                    { label: "Team Members", value: "240+" },
+                    { label: "Companies Founded", value: "2+" },
+                    { label: "Total Capital Raised", value: "$100M+" },
+                    { label: "Portfolio Valuation", value: "$1.2B" },
                     { label: "Based In", value: "San Francisco, CA" },
                   ].map((stat) => (
                     <div key={stat.label} className="founder-stat-row">
                       <span className="founder-stat-label">{stat.label}</span>
                       <span className="founder-stat-value">{stat.value}</span>
                     </div>
-                  ))}
-                </div>
-                <div className="founder-sidebar-card">
-                  <h2 className="tool-sidebar-title">Companies</h2>
-                  {["Acme AI ($2.4B)", "DataLens (Acquired)", "Nexus Cloud (Exit 2021)"].map((c) => (
-                    <div key={c} className="founder-company-row">{c}</div>
                   ))}
                 </div>
               </aside>
@@ -231,11 +259,6 @@ export default async function FounderPage({ params }: { params: Promise<{ slug: 
         .founder-stat-row:last-child { border-bottom: none; }
         .founder-stat-label { font-family: var(--font-ui); font-size: 12px; color: var(--color-secondary); }
         .founder-stat-value { font-family: var(--font-ui); font-size: 13px; font-weight: 700; color: var(--color-text); }
-        .founder-company-row {
-          font-family: var(--font-ui); font-size: 13px; color: var(--color-text);
-          padding: 10px 0; border-bottom: 1px solid var(--color-border); font-weight: 500;
-        }
-        .founder-company-row:last-child { border-bottom: none; }
         @media (max-width: 900px) {
           .founder-page-hero-inner { flex-direction: column; align-items: flex-start; }
           .founder-page-body { grid-template-columns: 1fr; }

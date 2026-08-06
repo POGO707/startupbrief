@@ -2,24 +2,45 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { Star, ShoppingBag, ArrowRight } from "lucide-react";
-import { books } from "@/lib/data";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { prisma } from "@/lib/prisma";
+import { formatArticle } from "@/lib/articles";
 
 export async function generateStaticParams() {
-  return books.map((b) => ({ slug: b.slug }));
+  const articles = await prisma.article.findMany({ select: { slug: true } });
+  return articles.map((b) => ({ slug: b.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const book = books.find((b) => b.slug === slug) ?? books[0];
-  return { title: `${book.title} — Book Summary | Startup Brief`, description: book.summary };
+  const article = await prisma.article.findUnique({ where: { slug } });
+  return { title: `${article?.title || "Book"} — Book Summary | Startup Brief`, description: article?.excerpt || "Book summary" };
 }
 
 export default async function BookPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const book = books.find((b) => b.slug === slug) ?? books[0];
-  const related = books.filter((b) => b.slug !== slug).slice(0, 4);
+  const dbArticle = await prisma.article.findUnique({ where: { slug }, include: { author: true } });
+  const dbArticles = await prisma.article.findMany({ where: { status: "published" }, take: 5 });
+  const articles = dbArticles.map(formatArticle);
+
+  const book = {
+    title: dbArticle?.title || "Essential Startup Book",
+    author: dbArticle?.author?.name || "Peter Thiel",
+    cover: dbArticle?.featuredImage || dbArticle?.image || "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=560&fit=crop&auto=format",
+    summary: dbArticle?.excerpt || "Notes on startups and how to build the future.",
+    affiliateUrl: `/article/${slug}`,
+    rating: 4.8,
+    year: 2026,
+  };
+
+  const related = articles.filter((b) => b.slug !== slug).slice(0, 4).map((b) => ({
+    id: b.id,
+    slug: b.slug,
+    title: b.title,
+    author: b.author,
+    cover: b.image,
+  }));
 
   const keyLearnings = [
     "Stop competing — instead, create a monopoly by building something entirely new",
@@ -67,9 +88,9 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
                   <p className="book-hero-summary">{book.summary}</p>
                   <div className="book-hero-actions">
                     <a href={book.affiliateUrl} target="_blank" rel="noopener noreferrer nofollow" className="btn btn-primary">
-                      <ShoppingBag size={14} /> Buy on Amazon
+                      <ShoppingBag size={14} /> Read Summary
                     </a>
-                    <span className="book-affiliate-note">Affiliate link — supports Startup Brief</span>
+                    <span className="book-affiliate-note">Supports Startup Brief</span>
                   </div>
                 </div>
               </div>
@@ -117,16 +138,12 @@ export default async function BookPage({ params }: { params: Promise<{ slug: str
                     { label: "Year", value: String(book.year) },
                     { label: "Rating", value: `${book.rating} / 5` },
                     { label: "Genre", value: "Business / Startups" },
-                    { label: "Pages", value: "195" },
                   ].map((d) => (
                     <div key={d.label} className="founder-stat-row">
                       <span className="founder-stat-label">{d.label}</span>
                       <span className="founder-stat-value">{d.value}</span>
                     </div>
                   ))}
-                  <a href={book.affiliateUrl} target="_blank" rel="noopener noreferrer nofollow" className="btn btn-primary" style={{ width: "100%", justifyContent: "center", marginTop: 16 }}>
-                    <ShoppingBag size={13} /> Buy on Amazon
-                  </a>
                 </div>
 
                 <div className="tool-sidebar-card">

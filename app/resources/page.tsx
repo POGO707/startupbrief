@@ -1,204 +1,158 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
-import TopAd from "@/components/layout/TopAd";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import NewsletterSection from "@/components/homepage/NewsletterSection";
-import { resources, businessArticles } from "@/lib/data";
+import RightSidebar from "@/components/sidebar/RightSidebar";
+import { getPublishedArticles } from "@/lib/articles";
+import { FileText, Download, Code, Layers, Shield, Sparkles } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Resources | Startup Brief",
-  description: "The latest in resources.",
+  title: "Founder Resources & Toolkits — Startup Brief",
+  description: "Pitch deck templates, financial model spreadsheets, async playbooks, and GTM frameworks.",
 };
 
-export default function ResourcesPage() {
+const resourcesData = [
+  {
+    title: "Series A Pitch Deck Master Template (2026 Edition)",
+    desc: "The 12-slide narrative deck structure used by venture-backed startups to secure top VC term sheets.",
+    category: "FUNDRAISING",
+    icon: FileText,
+    link: "/resources/pitch-deck-template",
+    dlCount: "14,200 Downloads",
+  },
+  {
+    title: "AI Infrastructure Unit Economics Spreadsheet",
+    desc: "Financial modeling spreadsheet to forecast GPU compute costs, API margins, and token tokenomics.",
+    category: "FINANCE",
+    icon: Download,
+    link: "/resources/unit-economics-calculator",
+    dlCount: "9,800 Downloads",
+  },
+  {
+    title: "Async Engineering Operating OS Playbook",
+    desc: "Comprehensive playbook on remote engineering documentation, pull request SLAs, and multi-timezone shipping.",
+    category: "PLAYBOOK",
+    icon: Layers,
+    link: "/resources/async-operating-system",
+    dlCount: "8,400 Downloads",
+  },
+  {
+    title: "SaaS Go-to-Market Engine Strategy",
+    desc: "Zero to 1,000 paying customer launch playbook using automated AI content engines and community funnels.",
+    category: "GROWTH",
+    icon: Code,
+    link: "/resources/gtm-playbook",
+    dlCount: "12,100 Downloads",
+  },
+  {
+    title: "SOC2 Compliance & Data Privacy Checklist",
+    desc: "Step-by-step security audit readiness checklist for early B2B SaaS and AI agent enterprise deployments.",
+    category: "SECURITY",
+    icon: Shield,
+    link: "/resources/soc2-checklist",
+    dlCount: "6,500 Downloads",
+  },
+  {
+    title: "AI Prompt Engineering & Agent Spec Framework",
+    desc: "Production prompt guidelines, guardrail specifications, and evaluation benchmarks for LLM apps.",
+    category: "AI ENGINE",
+    icon: Sparkles,
+    link: "/resources/ai-agent-spec",
+    dlCount: "11,300 Downloads",
+  },
+];
 
-  let featured: any = null;
-  const latestNews: any[] = [];
-  const gridNews: any[] = [];
-  const tools: any[] = [];
-  const categories: string[] = [];
-  const gridBooks: any[] = [];
-  const gridVideos: any[] = [];
-  let gridResources: any[] = [];
-  const rounds: any[] = [];
-  
-  featured = businessArticles[1];
-  gridResources = resources;
+export default async function ResourcesPage() {
+  const rawTrending = await getPublishedArticles({ take: 5, isTrending: true });
+  const rawLatest = await getPublishedArticles({ take: 5 });
 
   return (
     <>
-      <TopAd />
       <Header />
-      <main id="main-content" style={{ minHeight: "100vh" }}>
-        {/* PAGE HEADER */}
-        <div className="section" style={{ paddingBottom: 0 }}>
-          <div className="container">
-            <div className="section-header">
-              <h1 className="section-header-title">RESOURCES</h1>
-            </div>
+      <main id="main-content">
+        {/* RESOURCES HERO */}
+        <div className="resources-editorial-hero">
+          <div className="newspaper-container">
+            <span className="resources-badge">FOUNDER TOOLKITS &amp; PLAYBOOKS</span>
+            <h1 className="resources-title">Resources, Frameworks &amp; Calculators</h1>
+            <p className="resources-sub">
+              Free production-ready templates, spreadsheets, pitch decks, and operational frameworks created for founders and operators.
+            </p>
           </div>
         </div>
 
-        {/* HERO FEATURE SECTION */}
-        <section className="section editorial-border-top">
-          <div className="container">
-            <div className="hero-grid">
-              <article className="hero-main">
-                <Link href={"#"} className="hero-main-link">
-                  <div className="hero-main-image img-hover">
-                    <Image
-                      src={(featured as any)?.image || (featured as any)?.cover || (featured as any)?.thumbnail || "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=1200&h=700&fit=crop&auto=format"}
-                      alt={(featured as any)?.title || "Resources"}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 60vw"
-                      className="hero-main-img"
-                      style={{ objectFit: "cover" }}
-                      priority
-                    />
-                  </div>
-                  <div className="hero-main-content">
-                    <span className="badge">{(featured as any)?.category || "Resources"}</span>
-                    <h2 className="hero-main-title link-headline">{(featured as any)?.title || "Featured Resources Story"}</h2>
-                    <p className="hero-main-excerpt" style={{ fontFamily: "var(--font-headline)", fontSize: "19px", color: "var(--color-secondary)", lineHeight: 1.6, maxWidth: 640 }}>
-                      {(featured as any)?.excerpt || (featured as any)?.summary || "Read the full in-depth analysis on the latest trends and breakthroughs."}
-                    </p>
-                    <div className="article-meta" style={{ marginTop: 12 }}>
-                      <span className="meta-text" style={{ color: "var(--color-text)" }}>
-                        By {(featured as any)?.author || "Editorial Team"}
-                      </span>
-                      <span className="meta-dot" aria-hidden="true" />
-                      <span className="meta-text">
-                        {(featured as any)?.publishedAt || (featured as any)?.year || "July 31, 2026"}
-                      </span>
-                      <span className="meta-dot" aria-hidden="true" />
-                      <span className="meta-text">
-                        {(featured as any)?.readingTime || 5} min read
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              </article>
+        {/* MAIN CONTENT WITH SIDEBAR */}
+        <div className="newspaper-container" style={{ paddingBlock: 36 }}>
+          <div className="resources-page-layout">
+            <div className="resources-left-content">
+              <div className="section-header">
+                <h2 className="section-header-title">FEATURED FOUNDER TOOLKITS</h2>
+              </div>
 
-              <aside className="hero-sidebar">
-                <div className="sidebar-header" style={{ borderBottom: "2px solid var(--color-text)", paddingBottom: 12, marginBottom: 16 }}>
-                  <span className="sidebar-header-title" style={{ fontFamily: "var(--font-ui)", fontSize: 12, fontWeight: 800, letterSpacing: "0.1em", textTransform: "uppercase" }}>Trending</span>
-                </div>
-                <div className="hero-sidebar-list" style={{ display: "flex", flexDirection: "column" }}>
-                  {(typeof latestNews !== 'undefined' ? latestNews : []).map((item, i) => (
-                    <article key={i} style={{ display: "grid", gridTemplateColumns: "32px 1fr", gap: 16, alignItems: "start", padding: "16px 0", borderBottom: "1px solid var(--color-border)" }}>
-                      <div style={{ fontFamily: "var(--font-headline)", fontSize: 24, paddingTop: 4 }}>{String(i + 1).padStart(2, "0")}</div>
-                      <div style={{ display: "flex", flexDirection: "column" }}>
-                        <Link href="#" className="badge" style={{ marginBottom: 6, alignSelf: "flex-start" }}>{(item as any).category || "Resources"}</Link>
-                        <Link href="#" className="link-headline" style={{ fontFamily: "var(--font-headline)", fontSize: 18, fontWeight: 500, lineHeight: 1.25 }}>{(item as any).title}</Link>
-                        <div className="article-meta" style={{ marginTop: 6 }}><span className="meta-text">{(item as any).author || "Staff"}</span></div>
+              <div className="resources-grid-container">
+                {resourcesData.map((res) => {
+                  const IconComp = res.icon;
+                  return (
+                    <div key={res.title} className="resource-item-box">
+                      <div className="res-icon-wrap">
+                        <IconComp size={24} color="#ff6a00" />
                       </div>
-                    </article>
-                  ))}
-                  
-                    <div style={{ padding: "16px 0" }}>
-                      <p style={{ fontFamily: "var(--font-ui)", fontSize: 14, color: "var(--color-secondary)" }}>More top picks coming soon.</p>
+                      <div className="res-content-wrap">
+                        <div className="res-tag-row">
+                          <span className="card-orange-badge">{res.category}</span>
+                          <span className="dl-count-lbl">{res.dlCount}</span>
+                        </div>
+                        <h3 className="res-box-title">
+                          <Link href={res.link}>{res.title}</Link>
+                        </h3>
+                        <p className="res-box-desc">{res.desc}</p>
+                        <Link href={res.link} className="res-access-btn">
+                          Access Resource &rarr;
+                        </Link>
+                      </div>
                     </div>
-                    
-                </div>
-              </aside>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="resources-sidebar-col">
+              <RightSidebar trendingArticles={rawTrending} latestArticles={rawLatest} />
             </div>
           </div>
-        </section>
-
-        {/* GRID SECTION */}
-        <section className="section editorial-border-top">
-          <div className="container">
-            <div className="section-header">
-              <h2 className="section-header-title">LATEST IN RESOURCES</h2>
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 32 }}>
-              {/* RENDER GRID ITEMS BASED ON ROUTE DATA */}
-              
-
-              
-
-              
-
-              
-
-              
-                {gridResources.map((item, i) => (
-                  <article key={i} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "flex-start", padding: 24, border: "1px solid var(--color-border)", height: "100%" }}>
-                      <span className="badge">{item.type}</span>
-                      <h3 className="link-headline" style={{ fontFamily: "var(--font-headline)", fontSize: 22, fontWeight: 500, lineHeight: 1.2 }}>
-                        {item.title}
-                      </h3>
-                      <p style={{ fontFamily: "var(--font-ui)", fontSize: 14, color: "var(--color-secondary)", lineHeight: 1.5, flex: 1 }}>
-                        {item.description}
-                      </p>
-                      <button className="btn btn-primary" style={{ width: "100%", marginTop: 16 }}>Download</button>
-                    </div>
-                  </article>
-                ))}
-              
-
-              
-            </div>
-          </div>
-        </section>
-
-        <NewsletterSection />
+        </div>
       </main>
       <Footer />
+
       <style>{`
-        .hero-grid {
-          display: grid;
-          grid-template-columns: 1.6fr 1fr;
-          gap: 40px;
-          align-items: start;
+        .resources-editorial-hero {
+          background: #0f172a;
+          color: #ffffff;
+          padding-block: 40px;
+          border-bottom: 4px solid #ff6a00;
         }
-        .hero-main {
-          border-right: 1px solid var(--color-border-dark);
-          padding-right: 40px;
-        }
-        .hero-main-link {
-          display: flex;
-          flex-direction: column;
-          gap: 24px;
-          text-decoration: none;
-        }
-        .hero-main-image {
-          position: relative;
-          aspect-ratio: 16/9;
-          width: 100%;
-          border: 1px solid var(--color-border);
-        }
-        .hero-main-content {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-        }
-        .hero-main-content .badge {
-          margin-bottom: 12px;
-        }
-        .hero-main-title {
-          font-family: var(--font-headline);
-          font-size: clamp(32px, 4vw, 52px);
-          line-height: 1.1;
-          letter-spacing: -0.025em;
-          color: var(--color-text);
-          font-weight: 500;
-          margin-bottom: 16px;
-        }
-        @media (max-width: 1024px) {
-          .hero-grid {
-            grid-template-columns: 1fr;
-            gap: 40px;
-          }
-          .hero-main {
-            border-right: none;
-            padding-right: 0;
-            border-bottom: 1px solid var(--color-border-dark);
-            padding-bottom: 40px;
-          }
+        .resources-badge { font-family: var(--font-ui); font-size: 11px; font-weight: 800; color: #ff6a00; letter-spacing: 0.12em; text-transform: uppercase; }
+        .resources-title { font-family: var(--font-headline), Georgia, serif; font-size: clamp(32px, 4.5vw, 54px); font-weight: 800; color: #ffffff; margin: 6px 0 10px; }
+        .resources-sub { font-family: var(--font-ui); font-size: 14px; color: #94a3b8; max-width: 680px; }
+
+        .resources-page-layout { display: grid; grid-template-columns: 1fr 310px; gap: 36px; align-items: start; }
+        .resources-grid-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        .resource-item-box { display: flex; gap: 16px; border: 1px solid #e2e8f0; padding: 20px; background: #ffffff; align-items: start; }
+        .res-icon-wrap { width: 44px; height: 44px; background: #fff7ed; border: 1px solid #ffedd5; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .res-content-wrap { display: flex; flex-direction: column; gap: 6px; }
+        .res-tag-row { display: flex; justify-content: space-between; align-items: center; }
+        .card-orange-badge { font-family: var(--font-ui); font-size: 10px; font-weight: 800; color: #ff6a00; letter-spacing: 0.1em; text-transform: uppercase; }
+        .dl-count-lbl { font-family: var(--font-ui); font-size: 10px; color: #94a3b8; font-weight: 600; }
+        .res-box-title { font-family: var(--font-headline), Georgia, serif; font-size: 17px; font-weight: 700; margin: 0; line-height: 1.25; }
+        .res-box-title a { color: #0f172a; text-decoration: none; }
+        .res-box-title a:hover { color: #ff6a00; }
+        .res-box-desc { font-family: var(--font-ui); font-size: 13px; color: #475569; margin: 0; line-height: 1.45; }
+        .res-access-btn { font-family: var(--font-ui); font-size: 11px; font-weight: 800; color: #ff6a00; text-decoration: none; margin-top: 4px; }
+        .res-access-btn:hover { text-decoration: underline; }
+
+        @media (max-width: 900px) {
+          .resources-page-layout { grid-template-columns: 1fr; }
+          .resources-grid-container { grid-template-columns: 1fr; }
         }
       `}</style>
     </>

@@ -1,262 +1,106 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight } from "lucide-react";
-import { topPicksArticles } from "@/lib/data";
+import { getPublishedArticles } from "@/lib/articles";
 
-export default function TopPicks() {
-  const [featured, ...rest] = topPicksArticles;
+export default async function TopPicks() {
+  const articles = await getPublishedArticles({ isEditorsPick: true, take: 4 });
+  const displayArticles = articles.length >= 4 ? articles : await getPublishedArticles({ take: 4, skip: 3 });
 
   return (
-    <section className="top-picks section" aria-label="Top picks">
-      <div className="container">
-        <div className="section-header">
-          <span className="section-header-accent" aria-hidden="true" />
-          <h2 className="section-header-title">Top Picks</h2>
-          <Link href="/top-picks" className="section-header-link">
-            All Stories <ArrowRight size={12} />
-          </Link>
-        </div>
+    <section className="newspaper-section-block" aria-label="Editor's Picks">
+      <div className="section-header">
+        <h2 className="section-header-title">EDITOR&apos;S PICKS</h2>
+      </div>
 
-        <div className="top-picks-grid">
-          {/* ─── LEFT COLUMN: 2 STORIES ─── */}
-          <div className="top-picks-left">
-            {rest.slice(0, 2).map((article) => (
-              <article key={article.id} className="top-picks-side-card">
-                <div className="top-picks-side-img img-hover">
-                  <Image
-                    src={article.image}
-                    alt={article.title}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 25vw"
-                    className="tp-img"
-                  />
-                </div>
-                <div className="top-picks-side-body">
-                  <Link href={`/article/${article.slug}`} className="badge">
-                    {article.category}
-                  </Link>
-                  <h3 className="tp-side-title">
-                    <Link href={`/article/${article.slug}`} className="link-headline">
-                      {article.title}
-                    </Link>
-                  </h3>
-                  <p className="tp-excerpt">{article.excerpt}</p>
-                  <div className="article-meta" style={{ marginTop: 10 }}>
-                    <span className="meta-text">{article.author}</span>
-                    <span className="meta-dot" aria-hidden="true" />
-                    <span className="meta-text">{article.publishedAt}</span>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-
-          {/* ─── CENTER: LARGE FEATURE ─── */}
-          <article className="top-picks-center">
-            <Link href={`/article/${featured.slug}`} className="tp-center-link">
-              <div className="tp-center-img img-hover">
+      <div className="editors-picks-grid">
+        {displayArticles.map((item, idx) => (
+          <article key={item.slug || idx} className="editors-card">
+            <Link href={`/article/${item.slug}`} className="card-thumb-link">
+              <div className="editors-thumb-wrap">
                 <Image
-                  src={featured.image}
-                  alt={featured.title}
+                  src={item.image}
+                  alt={item.title}
                   fill
-                  sizes="(max-width: 768px) 100vw, 40vw"
-                  className="tp-center-img-inner"
+                  sizes="(max-width: 768px) 100vw, 320px"
+                  style={{ objectFit: "cover" }}
                 />
               </div>
-              <div className="tp-center-body">
-                <Link href={`/article/${featured.slug}`} className="badge">
-                  {featured.category}
-                </Link>
-                <h2 className="tp-center-title">{featured.title}</h2>
-                <p className="tp-center-excerpt">{featured.excerpt}</p>
-                <div className="article-meta" style={{ marginTop: 14 }}>
-                  <Image
-                    src={featured.authorAvatar}
-                    alt={featured.author}
-                    width={28}
-                    height={28}
-                    className="tp-avatar"
-                  />
-                  <span className="meta-text">{featured.author}</span>
-                  <span className="meta-dot" aria-hidden="true" />
-                  <span className="meta-text">{featured.publishedAt}</span>
-                  <span className="meta-dot" aria-hidden="true" />
-                  <span className="meta-text">{featured.readingTime} min read</span>
-                </div>
-              </div>
             </Link>
+            <div className="editors-card-body">
+              <span className="card-orange-badge">{item.category.toUpperCase()}</span>
+              <h3 className="editors-card-title">
+                <Link href={`/article/${item.slug}`}>{item.title}</Link>
+              </h3>
+              <span className="editors-card-time">{item.publishedAt}</span>
+            </div>
           </article>
-
-          {/* ─── RIGHT COLUMN: 2 STORIES ─── */}
-          <div className="top-picks-right">
-            {rest.slice(2, 4).map((article) => (
-              <article key={article.id} className="top-picks-side-card">
-                <div className="top-picks-side-img img-hover">
-                  <Image
-                    src={article.image}
-                    alt={article.title}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 25vw"
-                    className="tp-img"
-                  />
-                </div>
-                <div className="top-picks-side-body">
-                  <Link href={`/article/${article.slug}`} className="badge">
-                    {article.category}
-                  </Link>
-                  <h3 className="tp-side-title">
-                    <Link href={`/article/${article.slug}`} className="link-headline">
-                      {article.title}
-                    </Link>
-                  </h3>
-                  <p className="tp-excerpt">{article.excerpt}</p>
-                  <div className="article-meta" style={{ marginTop: 10 }}>
-                    <span className="meta-text">{article.author}</span>
-                    <span className="meta-dot" aria-hidden="true" />
-                    <span className="meta-text">{article.publishedAt}</span>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
+        ))}
       </div>
 
       <style>{`
-        .top-picks-grid {
+        .newspaper-section-block {
+          width: 100%;
+          margin-bottom: 36px;
+        }
+        .editors-picks-grid {
           display: grid;
-          grid-template-columns: 1fr 1.6fr 1fr;
-          gap: 32px;
-          align-items: start;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 20px;
         }
-        .top-picks-left,
-        .top-picks-right {
+        .editors-card {
           display: flex;
           flex-direction: column;
-          gap: 28px;
+          gap: 10px;
+          border-bottom: 1px solid #e2e8f0;
+          padding-bottom: 14px;
         }
-        .top-picks-side-card {
-          display: flex;
-          flex-direction: column;
-          gap: 14px;
-          padding-bottom: 28px;
-          border-bottom: 1px solid var(--color-border);
-        }
-        .top-picks-side-card:last-child {
-          border-bottom: none;
-          padding-bottom: 0;
-        }
-        .top-picks-side-img {
+        .card-thumb-link { display: block; }
+        .editors-thumb-wrap {
           position: relative;
           width: 100%;
-          height: 160px;
+          height: 140px;
+          background: #f1f5f9;
+          border: 1px solid #e2e8f0;
         }
-        .tp-img {
-          object-fit: cover;
-        }
-        .top-picks-side-body {
+        .editors-card-body {
           display: flex;
           flex-direction: column;
           gap: 6px;
         }
-        .tp-side-title {
-          font-family: var(--font-headline);
-          font-size: 17px;
+        .card-orange-badge {
+          font-family: var(--font-ui), sans-serif;
+          font-size: 10px;
+          font-weight: 800;
+          letter-spacing: 0.1em;
+          color: #ff6a00;
+          text-transform: uppercase;
+        }
+        .editors-card-title {
+          font-family: var(--font-headline), Georgia, serif;
+          font-size: 16px;
+          font-weight: 700;
           line-height: 1.25;
-          letter-spacing: -0.015em;
-          font-weight: 600;
+          margin: 0;
         }
-        .tp-excerpt {
-          font-family: var(--font-ui);
-          font-size: 13px;
-          color: var(--color-secondary);
-          line-height: 1.55;
-          display: -webkit-box;
-          -webkit-line-clamp: 3;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-
-        /* ─── CENTER ─── */
-        .top-picks-center {
-          border-left: 1px solid var(--color-border);
-          border-right: 1px solid var(--color-border);
-          padding: 0 32px;
-        }
-        .tp-center-link {
-          display: block;
+        .editors-card-title a {
+          color: #0f172a;
           text-decoration: none;
         }
-        .tp-center-img {
-          position: relative;
-          width: 100%;
-          height: 320px;
-          margin-bottom: 20px;
+        .editors-card-title a:hover {
+          color: #ff6a00;
         }
-        .tp-center-img-inner {
-          object-fit: cover;
-        }
-        .tp-center-body {
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-        }
-        .tp-center-title {
-          font-family: var(--font-headline);
-          font-size: clamp(22px, 2vw, 30px);
-          line-height: 1.15;
-          letter-spacing: -0.02em;
+        .editors-card-time {
+          font-family: var(--font-ui), sans-serif;
+          font-size: 10px;
+          color: #94a3b8;
           font-weight: 600;
-          color: var(--color-text);
-        }
-        .tp-center-excerpt {
-          font-family: var(--font-ui);
-          font-size: 15px;
-          color: var(--color-secondary);
-          line-height: 1.6;
-        }
-        .tp-avatar {
-          border-radius: 50%;
-          object-fit: cover;
-          flex-shrink: 0;
         }
 
         @media (max-width: 1024px) {
-          .top-picks-grid {
-            grid-template-columns: 1fr 1.4fr;
-            grid-template-rows: auto auto;
-          }
-          .top-picks-left {
-            grid-column: 1;
-          }
-          .top-picks-center {
-            grid-column: 2;
-            border-right: none;
-          }
-          .top-picks-right {
-            grid-column: 1 / -1;
-            flex-direction: row;
-            gap: 32px;
-          }
-          .top-picks-right .top-picks-side-card {
-            flex: 1;
-          }
+          .editors-picks-grid { grid-template-columns: repeat(2, 1fr); }
         }
-        @media (max-width: 768px) {
-          .top-picks-grid {
-            grid-template-columns: 1fr;
-          }
-          .top-picks-center {
-            border-left: none;
-            border-right: none;
-            border-top: 1px solid var(--color-border);
-            border-bottom: 1px solid var(--color-border);
-            padding: 24px 0;
-          }
-          .top-picks-right {
-            grid-column: 1;
-            flex-direction: column;
-          }
+        @media (max-width: 640px) {
+          .editors-picks-grid { grid-template-columns: 1fr; }
         }
       `}</style>
     </section>

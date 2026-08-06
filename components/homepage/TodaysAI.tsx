@@ -1,9 +1,22 @@
 import Link from "next/link";
 import Image from "next/image";
-import { aiArticles } from "@/lib/data";
+import { getPublishedArticles } from "@/lib/articles";
 
-export default function TodaysAI() {
-  const [featured, ...rest] = aiArticles;
+export default async function TodaysAI() {
+  const aiArticlesList = await getPublishedArticles({ categorySlug: "ai", take: 5 });
+  const fallback = {
+    id: "ai-def",
+    slug: "",
+    title: "Today's AI Developments",
+    excerpt: "The latest insights on artificial intelligence.",
+    category: "AI",
+    author: "Editorial Team",
+    publishedAt: "July 31, 2026",
+    readingTime: 5,
+    image: "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=1200&h=700&fit=crop&auto=format",
+  };
+  const featured = aiArticlesList[0] || fallback;
+  const rest = aiArticlesList.slice(1);
 
   return (
     <section className="todays-ai section editorial-border-top" aria-label="Today's AI news">

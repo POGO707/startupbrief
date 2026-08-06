@@ -1,10 +1,25 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Zap, Clock } from "lucide-react";
-import { makeMoneyArticles } from "@/lib/data";
+import { getPublishedArticles } from "@/lib/articles";
 
-export default function MakeMoneyAI() {
-  const [featured, ...guides] = makeMoneyArticles;
+export default async function MakeMoneyAI() {
+  const mmArticles = await getPublishedArticles({ categorySlug: "make-money-with-ai", take: 5 });
+  const articlesList = mmArticles.length > 0 ? mmArticles : await getPublishedArticles({ take: 5 });
+  const fallback = {
+    id: "mm-def",
+    slug: "",
+    title: "Make Money with AI",
+    excerpt: "Practical AI workflows and strategies.",
+    category: "Make Money with AI",
+    author: "Editorial Team",
+    authorAvatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=80&h=80&fit=crop&auto=format",
+    publishedAt: "July 31, 2026",
+    readingTime: 5,
+    image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&h=500&fit=crop&auto=format",
+  };
+  const featured = articlesList[0] || fallback;
+  const guides = articlesList.slice(1);
 
   return (
     <section className="make-money-section section" aria-label="Make money with AI">

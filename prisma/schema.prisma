@@ -8,47 +8,127 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
+  id        String    @id @default(cuid())
+  email     String    @unique
   name      String?
-  role      String   @default("writer") // admin, editor, writer
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  role      String    @default("writer") // admin, editor, writer
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   articles  Article[]
 }
 
 model Article {
-  id          String    @id @default(cuid())
-  title       String
-  slug        String    @unique
-  excerpt     String?
-  content     String
-  image       String?
-  publishedAt DateTime?
-  status      String    @default("draft") // draft, published
+  id            String    @id @default(cuid())
+  title         String
+  slug          String    @unique
+  excerpt       String?
+  content       String
+  featuredImage String?
+  image         String?
+  publishedAt   DateTime?
+  scheduleAt    DateTime?
+  status        String    @default("draft") // draft, published, scheduled
   
-  authorId    String
-  author      User      @relation(fields: [authorId], references: [id])
+  authorId      String
+  author        User      @relation(fields: [authorId], references: [id])
   
-  category    Category? @relation(fields: [categoryId], references: [id])
-  categoryId  String?
+  category      Category? @relation(fields: [categoryId], references: [id])
+  categoryId    String?
   
-  tags        Tag[]     @relation("ArticleTags")
+  tags          Tag[]     @relation("ArticleTags")
 
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  // SEO
+  seoTitle      String?
+  metaDesc      String?
+  openGraph     String?
+
+  // Meta
+  readingTime   Int?
+  views         Int       @default(0)
+
+  // Layout Flags
+  isHero        Boolean   @default(false)
+  isTrending    Boolean   @default(false)
+  isEditorsPick Boolean   @default(false)
+  videoUrl      String?
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
 model Category {
-  id       String    @id @default(cuid())
-  name     String    @unique
-  slug     String    @unique
-  articles Article[]
+  id          String    @id @default(cuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?
+  seoTitle    String?
+  seoDesc     String?
+  image       String?
+  status      String    @default("active")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
+  articles    Article[]
 }
 
 model Tag {
-  id       String    @id @default(cuid())
-  name     String    @unique
-  slug     String    @unique
-  articles Article[] @relation("ArticleTags")
+  id        String    @id @default(cuid())
+  name      String    @unique
+  slug      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  articles  Article[] @relation("ArticleTags")
 }
+
+model MediaItem {
+  id        String   @id @default(cuid())
+  name      String
+  path      String   @unique
+  url       String
+  size      Int
+  mimeType  String
+  folder    String   @default("/")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SiteSetting {
+  id           String   @id @default("default")
+  siteName     String   @default("Startup Brief")
+  siteDesc     String   @default("The latest news, analysis, and insights on AI, technology, and startups.")
+  logo         String?
+  favicon      String?
+  twitter      String?
+  linkedin     String?
+  github       String?
+  youtube      String?
+  contactEmail String?
+  contactPhone String?
+  seoTitle     String?
+  seoDesc      String?
+  analyticsId  String?
+  theme        String   @default("system")
+  updatedAt    DateTime @updatedAt
+}
+
+model Advertisement {
+  id        String   @id @default(cuid())
+  title     String
+  location  String   // header_leaderboard, mid_page_leaderboard, sidebar_rectangle, in_feed
+  imageUrl  String
+  targetUrl String
+  sponsor   String?  // WallClassic, DW Simplex, etc.
+  adSize    String   // 728x90, 300x250, etc.
+  status    String   @default("active") // active, inactive
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  status    String   @default("subscribed") // subscribed, unsubscribed
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+

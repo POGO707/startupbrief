@@ -1,11 +1,27 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { founderArticles } from "@/lib/data";
+import { getPublishedArticles } from "@/lib/articles";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 
-export default function FounderFirst() {
-  const [featuredStory, mediumStory, compact1, compact2, compact3] = founderArticles;
+export default async function FounderFirst() {
+  const founderArticles = await getPublishedArticles({ categorySlug: "founders", take: 5 });
+  const fallback = {
+    id: "f-def",
+    slug: "",
+    title: "Founder Journey & Lessons",
+    excerpt: "In-depth founder profiles and lessons.",
+    category: "Founders",
+    author: "Editorial Team",
+    publishedAt: "July 31, 2026",
+    readingTime: 5,
+    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=400&fit=crop&auto=format",
+  };
+  const featuredStory = founderArticles[0] || fallback;
+  const mediumStory = founderArticles[1] || fallback;
+  const compact1 = founderArticles[2] || fallback;
+  const compact2 = founderArticles[3] || fallback;
+  const compact3 = founderArticles[4] || fallback;
   const compactStories = [compact1, compact2, compact3];
 
   return (

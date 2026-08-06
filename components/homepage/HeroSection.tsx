@@ -1,209 +1,164 @@
 import Link from "next/link";
 import Image from "next/image";
-import { featuredArticle, heroSideArticles } from "@/lib/data";
+import { getPublishedArticles } from "@/lib/articles";
+import HeroSlider from "@/components/homepage/HeroSlider";
 
-export default function HeroSection() {
-  const side = heroSideArticles;
+export default async function HeroSection() {
+  // Fetch featured articles for slider
+  const heroArticles = await getPublishedArticles({ isHero: true, take: 5 });
+  const allArticles = await getPublishedArticles({ take: 8 });
+
+  // If no specific hero articles, use top published articles
+  const sliderArticles = heroArticles.length > 0 ? heroArticles : allArticles.slice(0, 5);
+
+  const trendingList = allArticles.slice(1, 5).length > 0 ? allArticles.slice(1, 5) : [
+    {
+      id: "t1",
+      slug: "openai-launches-gpt5-with-advanced-reasoning",
+      title: "OpenAI Launches GPT-5 with Advanced Reasoning Capabilities",
+      publishedAt: "AUG 1, 2026",
+      image: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=200&h=150&fit=crop&auto=format",
+    },
+    {
+      id: "t2",
+      slug: "byjus-former-ceo-files-100m-fraud-case",
+      title: "Byju's Former CEO Files $100M Fraud Case Against Trustee",
+      publishedAt: "AUG 1, 2026",
+      image: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=200&h=150&fit=crop&auto=format",
+    },
+    {
+      id: "t3",
+      slug: "isro-launches-digital-earth-observation-platform",
+      title: "ISRO Launches Digital Earth Observation Platform 'Jordan AI'",
+      publishedAt: "AUG 1, 2026",
+      image: "https://images.unsplash.com/photo-1517976487492-5750f3195933?w=200&h=150&fit=crop&auto=format",
+    },
+    {
+      id: "t4",
+      slug: "indias-tv-sensing-pioneer-raises-50m-series-c",
+      title: "India's TV Sensing Pioneer Raises $50M Series C",
+      publishedAt: "AUG 1, 2026",
+      image: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=200&h=150&fit=crop&auto=format",
+    },
+  ];
 
   return (
-    <section className="hero-section section editorial-border-top" aria-label="Featured stories">
-      <div className="container">
-        <div className="hero-grid">
-          {/* ─── LEFT: MAIN FEATURE STORY ─── */}
-          <article className="hero-main">
-            <Link href={`/article/${featuredArticle.slug}`} className="hero-main-link">
-              <div className="hero-main-image img-hover">
-                <Image
-                  src={featuredArticle.image}
-                  alt={featuredArticle.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 60vw"
-                  className="hero-main-img"
-                  priority
-                />
-              </div>
-              <div className="hero-main-content">
-                <span className="badge">{featuredArticle.category}</span>
-                <h1 className="hero-main-title link-headline">{featuredArticle.title}</h1>
-                <p className="hero-main-excerpt">{featuredArticle.excerpt}</p>
-                <div className="article-meta" style={{ marginTop: 12 }}>
-                  <span className="meta-text" style={{ color: "var(--color-text)" }}>
-                    By {featuredArticle.author}
-                  </span>
-                  <span className="meta-dot" aria-hidden="true" />
-                  <span className="meta-text">
-                    {featuredArticle.publishedAt}
-                  </span>
-                  <span className="meta-dot" aria-hidden="true" />
-                  <span className="meta-text">
-                    {featuredArticle.readingTime} min read
-                  </span>
-                </div>
-              </div>
-            </Link>
-          </article>
+    <section className="newspaper-hero-layout" aria-label="Featured News Slider Section">
+      {/* LEFT FEATURED NEWS AUTOMATIC SLIDER */}
+      <HeroSlider articles={sliderArticles} />
 
-          {/* ─── RIGHT: LATEST NEWS SIDEBAR ─── */}
-          <aside className="hero-sidebar" aria-label="Latest news">
-            <div className="sidebar-header">
-              <span className="sidebar-header-title">Latest News</span>
-            </div>
-            <div className="hero-sidebar-list">
-              {side.map((article, i) => (
-                <article key={article.id} className="hero-sidebar-item">
-                  <div className="hero-sidebar-number" aria-hidden="true">
-                    {String(i + 1).padStart(2, "0")}
-                  </div>
-                  <div className="hero-sidebar-content">
-                    <Link href={`/article/${article.slug}`} className="badge" style={{ marginBottom: 6 }}>
-                      {article.category}
-                    </Link>
-                    <h2 className="hero-sidebar-title">
-                      <Link href={`/article/${article.slug}`} className="link-headline">
-                        {article.title}
-                      </Link>
-                    </h2>
-                    <div className="article-meta" style={{ marginTop: 6 }}>
-                      <span className="meta-text">{article.author}</span>
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </aside>
+      {/* RIGHT TRENDING SIDEBAR */}
+      <aside className="hero-trending-sidebar">
+        <div className="sidebar-header-bar">
+          <span>TRENDING NOW</span>
         </div>
-      </div>
+
+        <div className="sidebar-list-container">
+          {trendingList.map((item, idx) => (
+            <article key={item.slug || idx} className="sidebar-trending-item">
+              <Link href={`/article/${item.slug}`} className="thumb-link">
+                <div className="sidebar-thumb-wrap">
+                  <Image
+                    src={item.image}
+                    alt={item.title}
+                    fill
+                    sizes="80px"
+                    style={{ objectFit: "cover" }}
+                  />
+                </div>
+              </Link>
+              <div className="sidebar-item-info">
+                <h3 className="sidebar-item-title">
+                  <Link href={`/article/${item.slug}`}>{item.title}</Link>
+                </h3>
+                <span className="sidebar-item-date">{item.publishedAt}</span>
+              </div>
+            </article>
+          ))}
+        </div>
+      </aside>
 
       <style>{`
-        .hero-section {
-          background: var(--color-bg);
-          padding-top: 32px;
-          padding-bottom: 32px;
-        }
-        .hero-grid {
+        .newspaper-hero-layout {
           display: grid;
-          grid-template-columns: 1.6fr 1fr;
-          gap: 40px;
-          align-items: start;
-        }
-
-        /* ─── MAIN ─── */
-        .hero-main {
-          border-right: 1px solid var(--color-border-dark);
-          padding-right: 40px;
-        }
-        .hero-main-link {
-          display: flex;
-          flex-direction: column;
+          grid-template-columns: 2.2fr 1fr;
           gap: 24px;
-          text-decoration: none;
-        }
-        .hero-main-image {
-          position: relative;
-          aspect-ratio: 16/9;
-          width: 100%;
-          border: 1px solid var(--color-border);
-        }
-        .hero-main-img {
-          object-fit: cover;
-          object-position: center;
-        }
-        .hero-main-content {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-        }
-        .hero-main-content .badge {
-          margin-bottom: 12px;
-        }
-        .hero-main-title {
-          font-family: var(--font-headline);
-          font-size: clamp(32px, 4vw, 52px);
-          line-height: 1.1;
-          letter-spacing: -0.025em;
-          color: var(--color-text);
-          font-weight: 500;
-          margin-bottom: 16px;
-        }
-        .hero-main-excerpt {
-          font-family: var(--font-headline);
-          font-size: 19px;
-          color: var(--color-secondary);
-          line-height: 1.6;
-          max-width: 640px;
+          margin-bottom: 32px;
+          align-items: stretch;
         }
 
-        /* ─── SIDEBAR ─── */
-        .hero-sidebar {
+        /* TRENDING SIDEBAR */
+        .hero-trending-sidebar {
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
           display: flex;
           flex-direction: column;
         }
-        .sidebar-header {
-          border-bottom: 2px solid var(--color-text);
-          padding-bottom: 12px;
-          margin-bottom: 16px;
-        }
-        .sidebar-header-title {
-          font-family: var(--font-ui);
-          font-size: 12px;
+        .sidebar-header-bar {
+          background: #0f172a;
+          color: #ffffff;
+          font-family: var(--font-ui), sans-serif;
+          font-size: 11px;
           font-weight: 800;
           letter-spacing: 0.1em;
+          padding: 10px 14px;
+          border-bottom: 2px solid #ff6a00;
           text-transform: uppercase;
-          color: var(--color-text);
         }
-        .hero-sidebar-list {
+        .sidebar-list-container {
+          padding: 14px;
           display: flex;
           flex-direction: column;
+          gap: 14px;
         }
-        .hero-sidebar-item {
+        .sidebar-trending-item {
           display: grid;
-          grid-template-columns: 32px 1fr;
-          gap: 16px;
+          grid-template-columns: 74px 1fr;
+          gap: 12px;
           align-items: start;
-          padding: 16px 0;
-          border-bottom: 1px solid var(--color-border);
+          padding-bottom: 12px;
+          border-bottom: 1px solid #f1f5f9;
         }
-        .hero-sidebar-item:last-child {
+        .sidebar-trending-item:last-child {
           border-bottom: none;
+          padding-bottom: 0;
         }
-        .hero-sidebar-number {
-          font-family: var(--font-headline);
-          font-size: 24px;
-          font-weight: 400;
-          color: var(--color-text);
-          line-height: 1;
-          padding-top: 4px;
+        .sidebar-thumb-wrap {
+          position: relative;
+          width: 74px;
+          height: 60px;
+          background: #f1f5f9;
+          border: 1px solid #e2e8f0;
         }
-        .hero-sidebar-content {
+        .sidebar-item-info {
           display: flex;
           flex-direction: column;
-          min-width: 0;
+          gap: 4px;
         }
-        .hero-sidebar-title {
-          font-family: var(--font-headline);
-          font-size: 18px;
+        .sidebar-item-title {
+          font-family: var(--font-headline), Georgia, serif;
+          font-size: 14px;
+          font-weight: 700;
           line-height: 1.25;
-          letter-spacing: -0.01em;
-          font-weight: 500;
-          overflow-wrap: anywhere;
+          margin: 0;
+        }
+        .sidebar-item-title a {
+          color: #0f172a;
+          text-decoration: none;
+        }
+        .sidebar-item-title a:hover {
+          color: #ff6a00;
+        }
+        .sidebar-item-date {
+          font-family: var(--font-ui), sans-serif;
+          font-size: 10px;
+          color: #94a3b8;
+          font-weight: 600;
         }
 
-        /* ─── RESPONSIVE ─── */
-        @media (max-width: 1024px) {
-          .hero-grid {
+        @media (max-width: 900px) {
+          .newspaper-hero-layout {
             grid-template-columns: 1fr;
-            gap: 40px;
-          }
-          .hero-main {
-            border-right: none;
-            padding-right: 0;
-            border-bottom: 1px solid var(--color-border-dark);
-            padding-bottom: 40px;
-          }
-        }
-        @media (max-width: 640px) {
-          .hero-main-title {
-            font-size: 28px;
           }
         }
       `}</style>

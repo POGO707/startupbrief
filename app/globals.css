@@ -4,28 +4,28 @@
    DESIGN TOKENS - PREMIUM DIGITAL NEWSPAPER
 ───────────────────────────────────────── */
 :root {
-  /* Colors - Newspaper Palette */
-  --color-bg: #f7f5f1; /* Warm paper tone */
-  --color-surface: #f7f5f1; 
-  --color-surface-hover: #edeae4;
-  --color-surface-alt: #ffffff; /* Rare stark white for high contrast */
+  /* Colors - Pure White Newspaper Palette */
+  --color-bg: #ffffff;
+  --color-surface: #ffffff; 
+  --color-surface-hover: #f8fafc;
+  --color-surface-alt: #0f172a;
   
   --color-primary: #FF6A00; /* Startup Brief Orange */
   --color-primary-dark: #e55e00;
   
-  --color-text: #111111; /* Newspaper ink black */
-  --color-secondary: #111111; /* Dark gray/brown ink */
-  --color-muted: #6b665f; /* Lighter ink */
+  --color-text: #0f172a; /* Deep Ink Black */
+  --color-secondary: #334155; /* Slate Gray */
+  --color-muted: #64748b; /* Muted Slate */
   
-  --color-border: #dcd7ce; /* Subtle paper line */
-  --color-border-dark: #111111; /* Strong editorial line */
+  --color-border: #e2e8f0; /* Thin Crisp Border */
+  --color-border-dark: #0f172a; /* Strong Editorial Border */
 
   /* Typography */
   --font-headline: "Newsreader", Georgia, serif;
   --font-ui: "Plus Jakarta Sans", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 
-  /* Spacing Scale - Dense Editorial Rhythm */
+  /* Spacing Scale */
   --space-xs: 4px;
   --space-sm: 8px;
   --space-md: 16px;
@@ -46,30 +46,22 @@
   --text-4xl: 64px;
   --text-5xl: 80px;
 
-  /* Borders - Strict 0px Radius for Newspaper Feel */
+  /* Borders */
   --radius-sm: 0px;
   --radius-md: 0px;
   --radius-lg: 0px;
   --radius-xl: 0px;
-  --radius-full: 0px; /* Only used for avatars */
-
-  /* Shadows - Minimal to None */
-  --shadow-sm: none;
-  --shadow-md: none;
-  --shadow-lg: none;
+  --radius-full: 0px;
 
   /* Transitions */
   --transition-fast: 150ms ease;
   --transition-base: 250ms ease;
 
-  /* Layout */
-  --container-max: 1280px;
+  /* Layout Containers */
+  --container-max: 1440px;
   --container-wide: 1440px;
 }
 
-/* ─────────────────────────────────────────
-   RESET & BASE
-───────────────────────────────────────── */
 *,
 *::before,
 *::after {
@@ -83,6 +75,8 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 body {
@@ -91,18 +85,21 @@ body {
   color: var(--color-text);
   background: var(--color-bg);
   line-height: 1.6;
+  max-width: 100vw;
   overflow-x: hidden;
 }
 
-/* ─────────────────────────────────────────
-   TYPOGRAPHY
-───────────────────────────────────────── */
+/* Accessibility Focus Ring */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
 
 h1, h2, h3, h4, h5, h6, .headline {
   font-family: var(--font-headline);
   line-height: 1.1;
   letter-spacing: -0.02em;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--color-text);
 }
 
@@ -111,182 +108,47 @@ h1, h2, h3, h4, h5, h6, .headline {
   font-size: clamp(36px, 6vw, 72px);
   line-height: 1.05;
   letter-spacing: -0.03em;
-  font-weight: 500;
+  font-weight: 800;
 }
 
-.headline-hero {
+.newspaper-container {
+  max-width: 1440px;
+  margin-inline: auto;
+  padding-inline: clamp(12px, 2.5vw, 32px);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--color-text);
+}
+
+.section-header-title {
   font-family: var(--font-headline);
-  font-size: clamp(28px, 4vw, 56px);
-  line-height: 1.05;
-  letter-spacing: -0.025em;
-  font-weight: 500;
-}
-
-.headline-section {
-  font-family: var(--font-headline);
-  font-size: clamp(24px, 3vw, 40px);
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-}
-
-.headline-card {
-  font-family: var(--font-headline);
-  font-size: clamp(16px, 2vw, 24px);
-  line-height: 1.2;
-  letter-spacing: -0.015em;
-}
-
-.body-lg {
-  font-family: var(--font-headline); /* Classic newspaper serif body */
-  font-size: 19px;
-  line-height: 1.6;
+  font-size: 22px;
+  font-weight: 800;
   color: var(--color-text);
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
 }
 
-.body-base {
-  font-family: var(--font-ui);
-  font-size: var(--text-base);
-  line-height: 1.65;
-  color: var(--color-secondary);
-}
-
-.body-sm {
-  font-family: var(--font-ui);
-  font-size: var(--text-sm);
-  line-height: 1.55;
-  color: var(--color-muted);
-}
-
-/* ─────────────────────────────────────────
-   LAYOUT
-───────────────────────────────────────── */
-.container {
-  width: 100%;
-  max-width: var(--container-max);
-  margin-inline: auto;
-  padding-inline: clamp(16px, 4vw, 48px);
-}
-
-.container-wide {
-  width: 100%;
-  max-width: var(--container-wide);
-  margin-inline: auto;
-  padding-inline: clamp(16px, 4vw, 48px);
-}
-
-/* ─────────────────────────────────────────
-   SECTION SEPARATORS (NEWSPAPER STYLE)
-───────────────────────────────────────── */
-.section {
-  padding-block: clamp(32px, 5vw, 64px);
-  border-bottom: 1px solid var(--color-border);
-}
-
-/* For main feature demarcations */
-.editorial-border-top {
-  border-top: 4px solid var(--color-text);
-}
-.editorial-border-bottom {
-  border-bottom: 4px solid var(--color-text);
-}
-
-/* ─────────────────────────────────────────
-   CATEGORY BADGES
-───────────────────────────────────────── */
 .badge {
   display: inline-flex;
   align-items: center;
   font-family: var(--font-ui);
   font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
+  font-weight: 800;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--color-text);
-  padding: 4px 0;
-  border-bottom: 1px solid var(--color-text);
+  color: var(--color-primary);
   line-height: 1;
   text-decoration: none;
-  transition: color var(--transition-fast), border-color var(--transition-fast);
 }
 
-.badge:hover {
-  color: var(--color-primary);
-  border-color: var(--color-primary);
-}
-
-.badge-filled {
-  background: var(--color-text);
-  color: var(--color-bg);
-  padding: 4px 8px;
-  border: none;
-}
-
-/* ─────────────────────────────────────────
-   SECTION HEADERS
-───────────────────────────────────────── */
-.section-header {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 24px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--color-border-dark);
-}
-
-.section-header-title {
-  font-family: var(--font-headline);
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--color-text);
-  letter-spacing: -0.02em;
-}
-
-/* ─────────────────────────────────────────
-   ARTICLE META
-───────────────────────────────────────── */
-.article-meta {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.meta-dot {
-  width: 3px;
-  height: 3px;
-  background: var(--color-border-dark);
-  flex-shrink: 0;
-}
-
-.meta-text {
-  font-family: var(--font-ui);
-  font-size: 11px;
-  color: var(--color-muted);
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-/* ─────────────────────────────────────────
-   IMAGE UTILITIES
-───────────────────────────────────────── */
-.img-hover {
-  overflow: hidden;
-  background: var(--color-border); /* Placeholder color matching paper */
-}
-
-.img-hover img {
-  transition: filter 500ms ease; /* Removed scale animation for cleaner editorial feel */
-  object-fit: cover;
-}
-
-.img-hover:hover img {
-  filter: brightness(0.95);
-}
-
-/* ─────────────────────────────────────────
-   LINK UTILITIES
-───────────────────────────────────────── */
 a {
   color: inherit;
   text-decoration: none;
@@ -300,47 +162,6 @@ a {
   color: var(--color-primary);
 }
 
-/* ─────────────────────────────────────────
-   BUTTONS
-───────────────────────────────────────── */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-ui);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  padding: 12px 24px;
-  border: 1px solid var(--color-text);
-  background: transparent;
-  color: var(--color-text);
-  cursor: pointer;
-  transition: all var(--transition-base);
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-.btn:hover {
-  background: var(--color-text);
-  color: var(--color-bg);
-}
-
-.btn-primary {
-  background: var(--color-text);
-  color: var(--color-bg);
-  border-color: var(--color-text);
-}
-
-.btn-primary:hover {
-  background: transparent;
-  color: var(--color-text);
-}
-
-/* ─────────────────────────────────────────
-   SCROLLBAR
-───────────────────────────────────────── */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -351,18 +172,7 @@ a {
   background: var(--color-border-dark);
 }
 
-/* ─────────────────────────────────────────
-   SELECTION
-───────────────────────────────────────── */
 ::selection {
-  background: var(--color-text);
-  color: var(--color-bg);
-}
-
-/* ─────────────────────────────────────────
-   FOCUS
-───────────────────────────────────────── */
-:focus-visible {
-  outline: 1px solid var(--color-primary);
-  outline-offset: 2px;
+  background: var(--color-primary);
+  color: #ffffff;
 }

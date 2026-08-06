@@ -1,65 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Sparkles } from "lucide-react";
+import { getPublishedArticles } from "@/lib/articles";
 
-const spotlightArticles = [
-  {
-    id: "sp-1",
-    slug: "ai-chip-war-nvidia-amd-groq",
-    title: "The Silent War for AI Inference: Inside the $100B Chip Architecture Battle",
-    excerpt:
-      "While GPUs dominate training, a new battleground has emerged for real-time inference latency. Here is how custom silicon startups are taking market share.",
-    category: "Deep Dive",
-    author: "Elena Rostova",
-    authorAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&h=80&fit=crop&auto=format",
-    publishedAt: "July 31, 2026",
-    readingTime: 12,
-    image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=900&h=600&fit=crop&auto=format",
-    badge: "Cover Story",
-  },
-  {
-    id: "sp-2",
-    slug: "autonomous-agents-enterprise-architecture",
-    title: "How 50 Fortune 500 Engineering Teams Are Deploying Agentic AI",
-    excerpt:
-      "A rare architectural teardown of production multi-agent systems built with LangChain, LlamaIndex, and custom orchestrators.",
-    category: "Architecture",
-    author: "Marcus Vance",
-    authorAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&auto=format",
-    publishedAt: "July 30, 2026",
-    readingTime: 8,
-    image: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=600&h=400&fit=crop&auto=format",
-    badge: "Spotlight",
-  },
-  {
-    id: "sp-3",
-    slug: "zero-to-one-hundred-million-arr-playbook",
-    title: "The $0 to $100M ARR Playbook for Next-Gen B2B AI Software",
-    excerpt: "Why traditional SaaS metrics no longer apply when building model-native applications with high variable compute costs.",
-    category: "Strategy",
-    author: "Sarah Chen",
-    authorAvatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop&auto=format",
-    publishedAt: "July 29, 2026",
-    readingTime: 6,
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop&auto=format",
-    badge: "Analysis",
-  },
-  {
-    id: "sp-4",
-    slug: "quantum-ai-hybrid-models",
-    title: "Quantum-Classical Hybrids Are Solving Previously Impossible Chemistry Problems",
-    excerpt: "How bio-tech startups are accelerating drug discovery from 10 years to 10 weeks using hybrid quantum models.",
-    category: "Research",
-    author: "David Park",
-    authorAvatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop&auto=format",
-    publishedAt: "July 28, 2026",
-    readingTime: 9,
-    image: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=600&h=400&fit=crop&auto=format",
-    badge: "Future Tech",
-  },
-];
-
-export default function SpotlightSection() {
+export default async function SpotlightSection() {
+  const articles = await getPublishedArticles({ take: 4, skip: 2 });
+  const spotlightArticles = articles.length >= 4 ? articles : (await getPublishedArticles({ take: 4 }));
   return (
     <section className="spotlight-section section editorial-border-top" aria-label="Editorial Spotlight">
       <div className="container">

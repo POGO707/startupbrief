@@ -1,150 +1,154 @@
-import Link from "next/link";
-import { Zap } from "lucide-react";
+"use client";
 
-const marketData = [
-  { text: "NVDA ▲ +2.31%", type: "positive" },
-  { text: "AAPL ▼ -0.42%", type: "negative" },
-  { text: "MSFT ▲ +1.18%", type: "positive" },
-  { text: "GOOGL ▲ +0.71%", type: "positive" },
-  { text: "META ▼ -0.29%", type: "negative" },
-  { text: "OpenAI raises $XXB", type: "neutral" },
-  { text: "Anthropic launches new model", type: "neutral" },
-  { text: "Perplexity AI expands globally", type: "neutral" },
-  { text: "Stripe acquires ...", type: "neutral" },
-  { text: "Figma IPO ...", type: "neutral" },
-  { text: "Cursor AI ...", type: "neutral" },
-  { text: "Lovable ...", type: "neutral" },
-  { text: "Windsurf ...", type: "neutral" },
+import { useState } from "react";
+import Link from "next/link";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
+const tickerItems = [
+  { id: "t1", title: "OpenAI Launches GPT-5 with advanced reasoning capabilities", slug: "openai-gpt5-changes-everything" },
+  { id: "t2", title: "Byju's founder files $533 million fraud case against founder", slug: "byjus-fraud-case" },
+  { id: "t3", title: "India's EV startup Euler Motors raises $100M in Series C", slug: "euler-motors-series-c" },
+  { id: "t4", title: "Anthropic Launches New Claude 4 AI Models for Enterprise", slug: "anthropic-claude-4-enterprise" },
+  { id: "t5", title: "Google DeepMind Unveils Genie 3 World Model", slug: "google-deepmind-genie-3" },
 ];
 
 export default function BreakingNewsTicker() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const handlePrev = () => {
+    setCurrentIndex((prev) => (prev === 0 ? tickerItems.length - 1 : prev - 1));
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prev) => (prev === tickerItems.length - 1 ? 0 : prev + 1));
+  };
+
   return (
-    <div className="ticker-wrapper" aria-label="Live Market News Ticker">
+    <div className="newspaper-ticker-bar" aria-label="Breaking news ticker">
       <div className="ticker-label">
-        <Zap size={14} className="ticker-icon" />
-        <span>MARKET LIVE</span>
+        <span className="flash-icon">&⚡</span> BREAKING
       </div>
-      <div className="ticker-content">
+
+      <div className="ticker-viewport">
         <div className="ticker-track">
-          {/* Double the array for seamless infinite scroll */}
-          {[...marketData, ...marketData].map((item, i) => (
-            <div key={i} className="ticker-item">
-              <span className={`ticker-text ${item.type}`}>
-                {item.text}
-              </span>
-              <span className="ticker-separator" aria-hidden="true" />
+          {tickerItems.map((item, index) => (
+            <div
+              key={item.id}
+              className={`ticker-item ${index === currentIndex ? "active" : ""}`}
+            >
+              <Link href={`/article/${item.slug}`} className="ticker-link">
+                {item.title}
+              </Link>
             </div>
           ))}
         </div>
       </div>
 
+      <div className="ticker-controls">
+        <button onClick={handlePrev} className="ticker-arrow-btn" aria-label="Previous headline">
+          <ChevronLeft size={14} />
+        </button>
+        <button onClick={handleNext} className="ticker-arrow-btn" aria-label="Next headline">
+          <ChevronRight size={14} />
+        </button>
+      </div>
+
       <style>{`
-        .ticker-wrapper {
+        .newspaper-ticker-bar {
           display: flex;
-          align-items: stretch;
-          background: var(--color-bg);
-          border-bottom: 2px solid var(--color-text);
-          height: 40px;
+          align-items: center;
+          background: #000;
+          color: #fff;
+          height: 38px;
+          border-bottom: 1px solid var(--color-border-dark);
           overflow: hidden;
         }
         .ticker-label {
           display: flex;
           align-items: center;
           gap: 6px;
-          background: var(--color-text);
-          color: var(--color-bg);
+          background: #000;
+          color: #fff;
           padding: 0 16px;
           font-family: var(--font-ui);
           font-size: 11px;
           font-weight: 800;
           letter-spacing: 0.1em;
           text-transform: uppercase;
+          border-right: 1px solid rgba(255,255,255,0.2);
           flex-shrink: 0;
-          z-index: 10;
+          height: 100%;
         }
-        .ticker-icon {
+        .flash-icon {
           color: var(--color-primary);
+          font-size: 14px;
         }
-        .ticker-content {
+        .ticker-viewport {
           flex: 1;
           overflow: hidden;
+          padding: 0 16px;
           position: relative;
+          height: 100%;
           display: flex;
           align-items: center;
-        }
-        .ticker-content::before,
-        .ticker-content::after {
-          content: "";
-          position: absolute;
-          top: 0;
-          bottom: 0;
-          width: 32px;
-          z-index: 2;
-          pointer-events: none;
-        }
-        .ticker-content::before {
-          left: 0;
-          background: linear-gradient(to right, var(--color-bg), transparent);
-        }
-        .ticker-content::after {
-          right: 0;
-          background: linear-gradient(to left, var(--color-bg), transparent);
         }
         .ticker-track {
           display: flex;
           align-items: center;
-          white-space: nowrap;
-          animation: ticker-scroll 35s linear infinite;
-        }
-        .ticker-track:hover {
-          animation-play-state: paused;
+          position: relative;
+          width: 100%;
+          height: 100%;
         }
         .ticker-item {
-          display: inline-flex;
-          align-items: center;
-          padding: 0 16px;
+          position: absolute;
+          left: 0;
+          right: 0;
+          opacity: 0;
+          transform: translateY(10px);
+          transition: all 300ms ease;
+          pointer-events: none;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
-        .ticker-text {
+        .ticker-item.active {
+          opacity: 1;
+          transform: translateY(0);
+          pointer-events: auto;
+        }
+        .ticker-link {
           font-family: var(--font-ui);
           font-size: 13px;
-          font-weight: 600;
-          letter-spacing: 0.02em;
+          font-weight: 500;
+          color: rgba(255,255,255,0.9);
           text-decoration: none;
+          transition: color 150ms ease;
         }
-        .ticker-text.positive {
-          color: #10b981; /* Green */
+        .ticker-link:hover {
+          color: var(--color-primary);
         }
-        .ticker-text.negative {
-          color: #ef4444; /* Red */
+        .ticker-controls {
+          display: flex;
+          align-items: center;
+          border-left: 1px solid rgba(255,255,255,0.2);
+          height: 100%;
+          flex-shrink: 0;
         }
-        .ticker-text.neutral {
-          color: var(--color-text);
+        .ticker-arrow-btn {
+          background: transparent;
+          border: none;
+          color: rgba(255,255,255,0.7);
+          width: 32px;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: color 150ms ease;
         }
-        .ticker-separator {
-          display: inline-block;
-          width: 4px;
-          height: 4px;
-          background: var(--color-border-dark);
-          margin-left: 32px;
-        }
-        @keyframes ticker-scroll {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
-        }
-        @media (max-width: 640px) {
-          .ticker-label span {
-            display: none;
-          }
-          .ticker-label {
-            padding: 0 12px;
-          }
-          .ticker-item {
-            padding: 0 12px;
-          }
+        .ticker-arrow-btn:hover {
+          color: #fff;
+          background: rgba(255,255,255,0.1);
         }
       `}</style>
     </div>

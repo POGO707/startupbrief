@@ -1,8 +1,19 @@
 import Link from "next/link";
 import { ArrowRight, TrendingUp } from "lucide-react";
-import { fundingRounds } from "@/lib/data";
+import { getPublishedArticles } from "@/lib/articles";
 
-export default function FundingTracker() {
+export default async function FundingTracker() {
+  const fundingArticles = await getPublishedArticles({ categorySlug: "funding", take: 6 });
+  const fundingRounds = fundingArticles.map((a) => ({
+    id: a.id,
+    startup: a.title,
+    amount: "$200M+",
+    stage: "Venture Round",
+    investors: ["Top Tier VCs", "Global Investors"],
+    country: "Global 🌐",
+    date: a.publishedAt,
+    logo: a.image,
+  }));
   return (
     <section className="funding-section section editorial-border-top" aria-label="Funding tracker">
       <div className="container">

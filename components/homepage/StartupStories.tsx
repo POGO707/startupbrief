@@ -1,10 +1,28 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { startupArticles } from "@/lib/data";
+import { getPublishedArticles } from "@/lib/articles";
 
-export default function StartupStories() {
-  const [a, b, c, d, e] = startupArticles;
+export default async function StartupStories() {
+  const suArticles = await getPublishedArticles({ categorySlug: "startups", take: 5 });
+  const startupArticlesList = suArticles.length > 0 ? suArticles : await getPublishedArticles({ take: 5 });
+  const fallback = {
+    id: "su-def",
+    slug: "",
+    title: "Startup Story & Breakdown",
+    excerpt: "Insights from hyper-growth startups.",
+    category: "Startups",
+    author: "Editorial Team",
+    publishedAt: "July 31, 2026",
+    readingTime: 5,
+    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=500&fit=crop&auto=format",
+  };
+  const a = startupArticlesList[0] || fallback;
+  const b = startupArticlesList[1] || fallback;
+  const c = startupArticlesList[2] || fallback;
+  const d = startupArticlesList[3] || fallback;
+  const e = startupArticlesList[4] || fallback;
+  const startupArticles = startupArticlesList;
 
   return (
     <section className="startup-section section" aria-label="Startup stories">

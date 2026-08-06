@@ -1,209 +1,148 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import TopAd from "@/components/layout/TopAd";
+import { Play, Video, Eye, Clock } from "lucide-react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import NewsletterSection from "@/components/homepage/NewsletterSection";
-import { videos, aiArticles } from "@/lib/data";
+import RightSidebar from "@/components/sidebar/RightSidebar";
+import { getPublishedArticles } from "@/lib/articles";
 
 export const metadata: Metadata = {
-  title: "Videos | Startup Brief",
-  description: "The latest in videos.",
+  title: "Videos & Keynotes Desk — Startup Brief",
+  description: "Exclusive founder keynotes, documentary features, technology teardowns, and video interviews.",
 };
 
-export default function VideosPage() {
+export default async function VideosPage() {
+  const articles = await getPublishedArticles({ take: 6 });
+  const heroVideo = articles[0];
+  const gridVideos = articles.slice(1);
 
-  let featured: any = null;
-  const latestNews: any[] = [];
-  const gridNews: any[] = [];
-  const tools: any[] = [];
-  const categories: string[] = [];
-  const gridBooks: any[] = [];
-  let gridVideos: any[] = [];
-  const gridResources: any[] = [];
-  const rounds: any[] = [];
-  
-  featured = aiArticles[1];
-  gridVideos = videos;
+  const rawTrending = await getPublishedArticles({ take: 5, isTrending: true });
+  const rawLatest = await getPublishedArticles({ take: 5 });
 
   return (
     <>
-      <TopAd />
       <Header />
-      <main id="main-content" style={{ minHeight: "100vh" }}>
-        {/* PAGE HEADER */}
-        <div className="section" style={{ paddingBottom: 0 }}>
-          <div className="container">
-            <div className="section-header">
-              <h1 className="section-header-title">VIDEOS</h1>
-            </div>
+      <main id="main-content">
+        {/* VIDEO THEATER HERO BANNER */}
+        <div className="video-theater-hero">
+          <div className="newspaper-container">
+            <span className="video-badge">VIDEO THEATER DESK</span>
+            <h1 className="video-hero-title">Keynotes, Documentary Features &amp; Breakdown Videos</h1>
+            <p className="video-hero-sub">
+              Watch high-production interviews with tech founders, architecture teardowns, and keynotes from major tech summits.
+            </p>
+
+            {heroVideo && (
+              <div className="hero-video-theater-card">
+                <Link href={`/article/${heroVideo.slug}`} className="video-hero-link">
+                  <div className="hero-video-thumb-wrap">
+                    <Image src={heroVideo.image} alt={heroVideo.title} fill priority sizes="(max-width: 900px) 100vw, 850px" style={{ objectFit: "cover" }} />
+                    <div className="orange-play-button-lg">
+                      <Play size={32} fill="#ffffff" color="#ffffff" />
+                    </div>
+                    <span className="duration-tag">24:15 FULL KEYNOTE</span>
+                  </div>
+                </Link>
+                <div className="hero-video-body">
+                  <span className="card-orange-badge">{heroVideo.category}</span>
+                  <h2 className="hero-video-headline">
+                    <Link href={`/article/${heroVideo.slug}`}>{heroVideo.title}</Link>
+                  </h2>
+                  <p className="hero-video-excerpt">{heroVideo.excerpt}</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* HERO FEATURE SECTION */}
-        <section className="section editorial-border-top">
-          <div className="container">
-            <div className="hero-grid">
-              <article className="hero-main">
-                <Link href={"#"} className="hero-main-link">
-                  <div className="hero-main-image img-hover">
-                    <Image
-                      src={(featured as any)?.image || (featured as any)?.cover || (featured as any)?.thumbnail || "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=1200&h=700&fit=crop&auto=format"}
-                      alt={(featured as any)?.title || "Videos"}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 60vw"
-                      className="hero-main-img"
-                      style={{ objectFit: "cover" }}
-                      priority
-                    />
-                  </div>
-                  <div className="hero-main-content">
-                    <span className="badge">{(featured as any)?.category || "Videos"}</span>
-                    <h2 className="hero-main-title link-headline">{(featured as any)?.title || "Featured Videos Story"}</h2>
-                    <p className="hero-main-excerpt" style={{ fontFamily: "var(--font-headline)", fontSize: "19px", color: "var(--color-secondary)", lineHeight: 1.6, maxWidth: 640 }}>
-                      {(featured as any)?.excerpt || (featured as any)?.summary || "Read the full in-depth analysis on the latest trends and breakthroughs."}
-                    </p>
-                    <div className="article-meta" style={{ marginTop: 12 }}>
-                      <span className="meta-text" style={{ color: "var(--color-text)" }}>
-                        By {(featured as any)?.author || "Editorial Team"}
-                      </span>
-                      <span className="meta-dot" aria-hidden="true" />
-                      <span className="meta-text">
-                        {(featured as any)?.publishedAt || (featured as any)?.year || "July 31, 2026"}
-                      </span>
-                      <span className="meta-dot" aria-hidden="true" />
-                      <span className="meta-text">
-                        {(featured as any)?.readingTime || 5} min read
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              </article>
+        {/* MAIN VIDEOS GRID WITH SIDEBAR */}
+        <div className="newspaper-container" style={{ paddingBlock: 36 }}>
+          <div className="videos-page-layout">
+            <div className="videos-left-content">
+              <div className="section-header">
+                <h2 className="section-header-title">POPULAR VIDEO BREAKDOWNS</h2>
+              </div>
 
-              <aside className="hero-sidebar">
-                <div className="sidebar-header" style={{ borderBottom: "2px solid var(--color-text)", paddingBottom: 12, marginBottom: 16 }}>
-                  <span className="sidebar-header-title" style={{ fontFamily: "var(--font-ui)", fontSize: 12, fontWeight: 800, letterSpacing: "0.1em", textTransform: "uppercase" }}>Trending</span>
-                </div>
-                <div className="hero-sidebar-list" style={{ display: "flex", flexDirection: "column" }}>
-                  {(typeof latestNews !== 'undefined' ? latestNews : []).map((item, i) => (
-                    <article key={i} style={{ display: "grid", gridTemplateColumns: "32px 1fr", gap: 16, alignItems: "start", padding: "16px 0", borderBottom: "1px solid var(--color-border)" }}>
-                      <div style={{ fontFamily: "var(--font-headline)", fontSize: 24, paddingTop: 4 }}>{String(i + 1).padStart(2, "0")}</div>
-                      <div style={{ display: "flex", flexDirection: "column" }}>
-                        <Link href="#" className="badge" style={{ marginBottom: 6, alignSelf: "flex-start" }}>{(item as any).category || "Videos"}</Link>
-                        <Link href="#" className="link-headline" style={{ fontFamily: "var(--font-headline)", fontSize: 18, fontWeight: 500, lineHeight: 1.25 }}>{(item as any).title}</Link>
-                        <div className="article-meta" style={{ marginTop: 6 }}><span className="meta-text">{(item as any).author || "Staff"}</span></div>
-                      </div>
-                    </article>
-                  ))}
-                  
-                    <div style={{ padding: "16px 0" }}>
-                      <p style={{ fontFamily: "var(--font-ui)", fontSize: 14, color: "var(--color-secondary)" }}>More top picks coming soon.</p>
-                    </div>
-                    
-                </div>
-              </aside>
-            </div>
-          </div>
-        </section>
-
-        {/* GRID SECTION */}
-        <section className="section editorial-border-top">
-          <div className="container">
-            <div className="section-header">
-              <h2 className="section-header-title">LATEST IN VIDEOS</h2>
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 32 }}>
-              {/* RENDER GRID ITEMS BASED ON ROUTE DATA */}
-              
-
-              
-
-              
-
-              
-                {gridVideos.map((item, i) => (
-                  <article key={i} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                    <Link href="#">
-                      <div className="img-hover" style={{ position: "relative", width: "100%", aspectRatio: "16/9", border: "1px solid var(--color-border)" }}>
-                        <Image src={item.thumbnail} alt={item.title} fill sizes="(max-width: 768px) 100vw, 33vw" style={{ objectFit: "cover" }} />
-                        <div style={{ position: "absolute", bottom: 8, right: 8, background: "rgba(0,0,0,0.8)", color: "white", padding: "2px 6px", fontSize: 12, borderRadius: 4, fontFamily: "var(--font-ui)" }}>{item.duration}</div>
+              <div className="videos-cards-grid">
+                {gridVideos.map((item) => (
+                  <article key={item.id} className="video-card-item">
+                    <Link href={`/article/${item.slug}`} className="thumb-link">
+                      <div className="video-card-thumb">
+                        <Image src={item.image} alt={item.title} fill sizes="300px" style={{ objectFit: "cover" }} />
+                        <div className="orange-play-overlay-sm">
+                          <Play size={20} fill="#ffffff" color="#ffffff" />
+                        </div>
+                        <span className="video-time-tag">14:20</span>
                       </div>
                     </Link>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "flex-start" }}>
-                      <span className="badge">{item.channel}</span>
-                      <h3 className="link-headline" style={{ fontFamily: "var(--font-headline)", fontSize: 20, fontWeight: 500, lineHeight: 1.2 }}>
-                        <Link href="#">{item.title}</Link>
+                    <div className="video-card-info">
+                      <span className="card-orange-badge">{item.category}</span>
+                      <h3 className="video-card-title">
+                        <Link href={`/article/${item.slug}`}>{item.title}</Link>
                       </h3>
                       <div className="article-meta">
+                        <span className="meta-text">{item.author}</span>
+                        <span className="meta-dot">•</span>
                         <span className="meta-text">{item.publishedAt}</span>
                       </div>
                     </div>
                   </article>
                 ))}
-              
+              </div>
+            </div>
 
-              
-
-              
+            <div className="videos-sidebar-col">
+              <RightSidebar trendingArticles={rawTrending} latestArticles={rawLatest} />
             </div>
           </div>
-        </section>
-
-        <NewsletterSection />
+        </div>
       </main>
       <Footer />
+
       <style>{`
-        .hero-grid {
-          display: grid;
-          grid-template-columns: 1.6fr 1fr;
-          gap: 40px;
-          align-items: start;
+        .video-theater-hero {
+          background: #0f172a;
+          color: #ffffff;
+          padding-block: 40px;
+          border-bottom: 4px solid #ff6a00;
         }
-        .hero-main {
-          border-right: 1px solid var(--color-border-dark);
-          padding-right: 40px;
-        }
-        .hero-main-link {
-          display: flex;
-          flex-direction: column;
-          gap: 24px;
-          text-decoration: none;
-        }
-        .hero-main-image {
-          position: relative;
-          aspect-ratio: 16/9;
-          width: 100%;
-          border: 1px solid var(--color-border);
-        }
-        .hero-main-content {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-        }
-        .hero-main-content .badge {
-          margin-bottom: 12px;
-        }
-        .hero-main-title {
-          font-family: var(--font-headline);
-          font-size: clamp(32px, 4vw, 52px);
-          line-height: 1.1;
-          letter-spacing: -0.025em;
-          color: var(--color-text);
-          font-weight: 500;
-          margin-bottom: 16px;
-        }
-        @media (max-width: 1024px) {
-          .hero-grid {
-            grid-template-columns: 1fr;
-            gap: 40px;
-          }
-          .hero-main {
-            border-right: none;
-            padding-right: 0;
-            border-bottom: 1px solid var(--color-border-dark);
-            padding-bottom: 40px;
-          }
+        .video-badge { font-family: var(--font-ui); font-size: 11px; font-weight: 800; color: #ff6a00; letter-spacing: 0.12em; text-transform: uppercase; }
+        .video-hero-title { font-family: var(--font-headline), Georgia, serif; font-size: clamp(32px, 4.5vw, 54px); font-weight: 800; color: #ffffff; margin: 6px 0 10px; }
+        .video-hero-sub { font-family: var(--font-ui); font-size: 14px; color: #94a3b8; max-width: 680px; margin-bottom: 28px; }
+
+        .hero-video-theater-card { background: #1e293b; border: 1px solid #334155; overflow: hidden; }
+        .video-hero-link { display: block; position: relative; }
+        .hero-video-thumb-wrap { position: relative; width: 100%; height: 380px; background: #000; display: flex; align-items: center; justify-content: center; }
+        .orange-play-button-lg { position: absolute; width: 64px; height: 64px; background: #ff6a00; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding-left: 4px; z-index: 2; transition: transform 200ms ease; }
+        .hero-video-link:hover .orange-play-button-lg { transform: scale(1.1); }
+        .duration-tag { position: absolute; bottom: 12px; right: 12px; background: rgba(0,0,0,0.85); color: #fff; font-family: var(--font-ui); font-size: 11px; font-weight: 800; padding: 4px 10px; z-index: 2; }
+
+        .hero-video-body { padding: 24px; display: flex; flex-direction: column; gap: 8px; }
+        .card-orange-badge { font-family: var(--font-ui); font-size: 10px; font-weight: 800; color: #ff6a00; letter-spacing: 0.1em; text-transform: uppercase; }
+        .hero-video-headline { font-family: var(--font-headline), Georgia, serif; font-size: 26px; font-weight: 800; margin: 0; }
+        .hero-video-headline a { color: #ffffff; text-decoration: none; }
+        .hero-video-headline a:hover { color: #ff6a00; }
+        .hero-video-excerpt { font-family: var(--font-ui); font-size: 14px; color: #cbd5e1; margin: 0; }
+
+        .videos-page-layout { display: grid; grid-template-columns: 1fr 310px; gap: 36px; align-items: start; }
+        .videos-cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        .video-card-item { display: flex; flex-direction: column; gap: 10px; border: 1px solid #e2e8f0; padding: 14px; background: #ffffff; }
+        .video-card-thumb { position: relative; width: 100%; height: 160px; background: #000; display: flex; align-items: center; justify-content: center; }
+        .orange-play-overlay-sm { position: absolute; width: 42px; height: 42px; background: #ff6a00; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding-left: 3px; z-index: 2; }
+        .video-time-tag { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.85); color: #fff; font-family: var(--font-ui); font-size: 10px; font-weight: 700; padding: 2px 6px; z-index: 2; }
+        .video-card-info { display: flex; flex-direction: column; gap: 6px; }
+        .video-card-title { font-family: var(--font-headline), Georgia, serif; font-size: 16px; font-weight: 700; margin: 0; }
+        .video-card-title a { color: #0f172a; text-decoration: none; }
+        .video-card-title a:hover { color: #ff6a00; }
+
+        .article-meta { display: flex; align-items: center; gap: 6px; font-size: 10px; color: #94a3b8; font-weight: 600; margin-top: 4px; }
+        .meta-dot { color: #cbd5e1; }
+
+        @media (max-width: 900px) {
+          .videos-page-layout { grid-template-columns: 1fr; }
+          .videos-cards-grid { grid-template-columns: 1fr; }
+          .hero-video-thumb-wrap { height: 250px; }
         }
       `}</style>
     </>

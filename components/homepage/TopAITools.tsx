@@ -1,11 +1,22 @@
-"use client";
-
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, ExternalLink } from "lucide-react";
-import { topTools } from "@/lib/data";
+import { getPublishedArticles } from "@/lib/articles";
 
-export default function TopAITools() {
+export default async function TopAITools() {
+  const articles = await getPublishedArticles({ take: 8 });
+  const topTools = articles.map((a, i) => ({
+    id: a.id,
+    slug: a.slug,
+    name: a.title.split(" ")[0] || a.title,
+    tagline: a.excerpt,
+    category: a.category || "Coding",
+    logo: a.image,
+    pricing: "Free / $20/mo",
+    pricingType: (i % 2 === 0 ? "freemium" : "paid") as "freemium" | "paid" | "free",
+    url: `/article/${a.slug}`,
+    description: a.excerpt,
+  }));
   return (
     <section className="tools-section section" aria-label="Top AI Tools">
       <div className="container">

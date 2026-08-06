@@ -1,321 +1,135 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Play } from "lucide-react";
-import { videos } from "@/lib/data";
+import { Play } from "lucide-react";
+import { getPublishedArticles } from "@/lib/articles";
 
-export default function VideosSection() {
-  const [featured, ...playlist] = videos;
+export default async function VideosSection() {
+  const articles = await getPublishedArticles({ take: 3 });
 
   return (
-    <section className="videos-section section editorial-border-top" aria-label="Videos">
-      <div className="container">
-        <div className="section-header">
-          <h2 className="section-header-title">Videos & Multimedia</h2>
-        </div>
+    <section className="newspaper-section-block" aria-label="Videos Section">
+      <div className="section-header">
+        <h2 className="section-header-title">VIDEOS</h2>
+        <Link href="/videos" className="section-view-all-link">
+          VIEW ALL VIDEOS &rarr;
+        </Link>
+      </div>
 
-        <div className="videos-layout">
-          {/* ─── FEATURED VIDEO ─── */}
-          <article className="video-featured">
-            <a
-              href={`https://www.youtube.com/watch?v=${featured.youtubeId}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="video-featured-thumb"
-              aria-label={`Watch: ${featured.title}`}
-            >
-              <Image
-                src={featured.thumbnail}
-                alt={featured.title}
-                fill
-                sizes="(max-width: 768px) 100vw, 60vw"
-                className="video-thumb-img"
-              />
-              <div className="video-overlay" aria-hidden="true" />
-              <div className="video-play-btn" aria-hidden="true">
-                <Play size={28} fill="var(--color-bg)" color="var(--color-bg)" />
+      <div className="videos-grid">
+        {articles.map((item, idx) => (
+          <article key={item.slug || idx} className="video-card">
+            <Link href={`/article/${item.slug}`} className="video-thumb-link">
+              <div className="video-thumb-wrap">
+                <Image
+                  src={item.image}
+                  alt={item.title}
+                  fill
+                  sizes="400px"
+                  style={{ objectFit: "cover" }}
+                />
+                <div className="orange-play-overlay">
+                  <Play size={22} fill="#ffffff" color="#ffffff" />
+                </div>
+                <span className="video-duration-badge">12:45</span>
               </div>
-              <span className="video-duration">{featured.duration}</span>
-            </a>
-            <div className="video-featured-body">
-              <span className="badge">{featured.channel}</span>
-              <h3 className="video-featured-title">
-                <a
-                  href={`https://www.youtube.com/watch?v=${featured.youtubeId}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="link-headline"
-                >
-                  {featured.title}
-                </a>
+            </Link>
+            <div className="video-info">
+              <span className="card-orange-badge">{item.category.toUpperCase()}</span>
+              <h3 className="video-title">
+                <Link href={`/article/${item.slug}`}>{item.title}</Link>
               </h3>
-              <p className="video-featured-excerpt">{featured.excerpt}</p>
-              <div className="article-meta" style={{ marginTop: 10 }}>
-                <span className="meta-text">{featured.publishedAt}</span>
-              </div>
-              <Link href={`/videos/${featured.slug}`} className="btn-video-read">
-                Read Summary <ArrowRight size={12} />
-              </Link>
+              <span className="video-time">{item.publishedAt}</span>
             </div>
           </article>
-
-          {/* ─── PLAYLIST ─── */}
-          <div className="video-playlist">
-            <div className="video-playlist-header">
-              <span className="video-playlist-label">Up Next</span>
-            </div>
-            {playlist.map((video) => (
-              <article key={video.id} className="video-playlist-item">
-                <a
-                  href={`https://www.youtube.com/watch?v=${video.youtubeId}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="video-playlist-thumb-wrap"
-                  aria-label={`Watch: ${video.title}`}
-                >
-                  <Image
-                    src={video.thumbnail}
-                    alt={video.title}
-                    fill
-                    sizes="140px"
-                    className="video-thumb-img"
-                  />
-                  <div className="video-playlist-play" aria-hidden="true">
-                    <Play size={14} fill="var(--color-bg)" color="var(--color-bg)" />
-                  </div>
-                  <span className="video-playlist-duration">{video.duration}</span>
-                </a>
-                <div className="video-playlist-info">
-                  <span className="badge">{video.channel}</span>
-                  <h4 className="video-playlist-title link-headline">
-                    <a
-                      href={`https://www.youtube.com/watch?v=${video.youtubeId}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {video.title}
-                    </a>
-                  </h4>
-                  <span className="meta-text">{video.publishedAt}</span>
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
+        ))}
       </div>
 
       <style>{`
-        .videos-section {
-          background: var(--color-bg);
-        }
-        .videos-layout {
-          display: grid;
-          grid-template-columns: 1.4fr 1fr;
-          gap: 60px;
-          align-items: start;
-        }
-
-        /* ─── FEATURED VIDEO ─── */
-        .video-featured {
-          display: flex;
-          flex-direction: column;
-          border-right: 1px solid var(--color-border-dark);
-          padding-right: 40px;
-        }
-        .video-featured-thumb {
-          position: relative;
-          display: block;
+        .newspaper-section-block {
           width: 100%;
-          aspect-ratio: 16/9;
-          overflow: hidden;
-          border: 1px solid var(--color-border);
-          cursor: pointer;
-          margin-bottom: 24px;
+          margin-bottom: 40px;
         }
-        .video-thumb-img {
-          object-fit: cover;
-        }
-        .video-overlay {
-          position: absolute;
-          inset: 0;
-          background: rgba(0,0,0,0.2);
-          transition: background 300ms ease;
-        }
-        .video-featured-thumb:hover .video-overlay {
-          background: rgba(0,0,0,0.1);
-        }
-        .video-play-btn {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          width: 64px;
-          height: 64px;
-          background: var(--color-text);
-          border-radius: 0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 2;
-          transition: background 200ms ease, transform 200ms ease;
-        }
-        .video-featured-thumb:hover .video-play-btn {
-          background: var(--color-primary);
-        }
-        .video-duration {
-          position: absolute;
-          bottom: 12px;
-          right: 12px;
-          font-family: var(--font-ui);
-          font-size: 11px;
-          font-weight: 800;
-          color: var(--color-bg);
-          background: var(--color-text);
-          padding: 4px 8px;
-          z-index: 2;
-        }
-        .video-featured-body {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-          align-items: flex-start;
-        }
-        .video-featured-title {
-          font-family: var(--font-headline);
-          font-size: clamp(24px, 2.5vw, 32px);
-          line-height: 1.15;
-          letter-spacing: -0.02em;
-          font-weight: 500;
-        }
-        .video-featured-title a {
-          text-decoration: none;
-        }
-        .video-featured-excerpt {
-          font-family: var(--font-ui);
-          font-size: 15px;
-          color: var(--color-secondary);
-          line-height: 1.6;
-          display: -webkit-box;
-          -webkit-line-clamp: 3;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-        .btn-video-read {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          font-family: var(--font-ui);
-          font-size: 11px;
-          font-weight: 800;
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-          color: var(--color-text);
-          text-decoration: none;
-          margin-top: 8px;
-          border-bottom: 1px solid var(--color-text);
-          padding-bottom: 2px;
-        }
-
-        /* ─── PLAYLIST ─── */
-        .video-playlist {
-          display: flex;
-          flex-direction: column;
-        }
-        .video-playlist-header {
-          padding-bottom: 12px;
-          border-bottom: 2px solid var(--color-text);
-          margin-bottom: 0;
-        }
-        .video-playlist-label {
-          font-family: var(--font-ui);
-          font-size: 10px;
-          font-weight: 800;
-          letter-spacing: 0.12em;
-          text-transform: uppercase;
-          color: var(--color-text);
-        }
-        .video-playlist-item {
+        .videos-grid {
           display: grid;
-          grid-template-columns: 140px 1fr;
-          gap: 16px;
-          padding: 16px 0;
-          border-bottom: 1px solid var(--color-border);
+          grid-template-columns: repeat(3, 1fr);
+          gap: 20px;
         }
-        .video-playlist-item:last-child {
-          border-bottom: none;
+        .video-card {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          border: 1px solid #e2e8f0;
+          padding: 12px;
+          background: #ffffff;
         }
-        .video-playlist-thumb-wrap {
+        .video-thumb-link { display: block; }
+        .video-thumb-wrap {
           position: relative;
-          display: block;
-          width: 140px;
-          height: 90px;
-          border: 1px solid var(--color-border);
-          overflow: hidden;
-          flex-shrink: 0;
-          cursor: pointer;
-        }
-        .video-playlist-play {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          width: 32px;
-          height: 32px;
-          background: var(--color-text);
-          border-radius: 0;
+          width: 100%;
+          height: 180px;
+          background: #000000;
           display: flex;
           align-items: center;
           justify-content: center;
-          z-index: 2;
         }
-        .video-playlist-duration {
+        .orange-play-overlay {
           position: absolute;
-          bottom: 6px;
-          right: 6px;
-          font-family: var(--font-ui);
+          width: 48px;
+          height: 48px;
+          background: #ff6a00;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding-left: 4px;
+          z-index: 2;
+          transition: transform 150ms ease;
+        }
+        .video-thumb-link:hover .orange-play-overlay {
+          transform: scale(1.1);
+        }
+        .video-duration-badge {
+          position: absolute;
+          bottom: 8px;
+          right: 8px;
+          background: rgba(0,0,0,0.85);
+          color: #ffffff;
+          font-family: var(--font-ui), sans-serif;
           font-size: 10px;
-          font-weight: 800;
-          color: var(--color-bg);
-          background: var(--color-text);
+          font-weight: 700;
           padding: 2px 6px;
           z-index: 2;
         }
-        .video-playlist-info {
+        .video-info {
           display: flex;
           flex-direction: column;
-          align-items: flex-start;
           gap: 6px;
         }
-        .video-playlist-title {
-          font-family: var(--font-headline);
-          font-size: 16px;
-          line-height: 1.25;
-          letter-spacing: -0.01em;
-          font-weight: 500;
+        .card-orange-badge {
+          font-family: var(--font-ui), sans-serif;
+          font-size: 10px;
+          font-weight: 800;
+          color: #ff6a00;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
         }
-        .video-playlist-title a {
-          text-decoration: none;
+        .video-title {
+          font-family: var(--font-headline), Georgia, serif;
+          font-size: 16px;
+          font-weight: 700;
+          line-height: 1.25;
+          margin: 0;
+        }
+        .video-title a { color: #0f172a; text-decoration: none; }
+        .video-title a:hover { color: #ff6a00; }
+        .video-time {
+          font-family: var(--font-ui), sans-serif;
+          font-size: 10px;
+          color: #94a3b8;
         }
 
         @media (max-width: 900px) {
-          .videos-layout {
-            grid-template-columns: 1fr;
-            gap: 40px;
-          }
-          .video-featured {
-            border-right: none;
-            padding-right: 0;
-            border-bottom: 1px solid var(--color-border-dark);
-            padding-bottom: 32px;
-          }
-        }
-        @media (max-width: 480px) {
-          .video-playlist-item {
-            grid-template-columns: 100px 1fr;
-          }
-          .video-playlist-thumb-wrap {
-            width: 100px;
-            height: 70px;
-          }
+          .videos-grid { grid-template-columns: 1fr; }
         }
       `}</style>
     </section>
